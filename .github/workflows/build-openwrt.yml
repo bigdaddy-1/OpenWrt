@@ -23,9 +23,9 @@ env:
   REPO_URL: https://github.com/coolsnowwolf/lede
   REPO_BRANCH: master
   FEEDS_CONF: feeds.conf.default
-  CONFIG_FILE: .lean
-  DIY_P1_SH: lean-before.sh
-  DIY_P2_SH: lean-after.sh
+  CONFIG_FILE: .openwrt
+  DIY_P1_SH: openwrt-before.sh
+  DIY_P2_SH: openwrt-after.sh
   UPLOAD_BIN_DIR: false
   UPLOAD_FIRMWARE: true
   UPLOAD_COWTRANSFER: false
