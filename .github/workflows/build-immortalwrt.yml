@@ -23,7 +23,7 @@ env:
   REPO_URL: https://github.com/1715173329/immortalwrt.git
   REPO_BRANCH: master-ax3000
   FEEDS_CONF: feeds.conf.default
-  CONFIG_FILE: .config
+  CONFIG_FILE: .immortalwrt
   DIY_P1_SH: immortalwrt-before.sh
   DIY_P2_SH: immortalwrt-after.sh
   UPLOAD_BIN_DIR: false
