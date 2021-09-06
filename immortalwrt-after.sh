@@ -10,6 +10,10 @@
 # Description: OpenWrt DIY script part 2 (After Update feeds)
 #
 
+# Modify default IP
+sed -i 's/192.168.1.1/10.0.0.1/g' package/base-files/files/bin/config_generate
+# Modify default NAME
+sed -i 's/ImmortalWrt/OpenWrt/g' package/base-files/files/bin/config_generate
 # Modify default OPENCLASH
 rm -rf ./feeds/luci/applications/luci-app-openclash/*
 cd ./feeds/luci/applications/luci-app-openclash
@@ -19,8 +23,3 @@ git config core.sparsecheckout true
 echo "luci-app-openclash" >> .git/info/sparse-checkout
 git pull --depth 1 origin master
 git branch --set-upstream-to=origin/master master
-cd openwrt
-# Modify default IP
-sed -i 's/192.168.1.1/10.0.0.1/g' package/base-files/files/bin/config_generate
-# Modify default NAME
-sed -i 's/ImmortalWrt/OpenWrt/g' package/base-files/files/bin/config_generate
