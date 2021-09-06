@@ -11,8 +11,7 @@
 #
 
 # Modify default OPENCLASH
-rm -rf ./feeds/luci/applications/luci-app-openclash
-mkdir ./feeds/luci/applications/luci-app-openclash
+rm -rf ./feeds/luci/applications/luci-app-openclash/*
 cd ./feeds/luci/applications/luci-app-openclash
 git init
 git remote add -f origin https://github.com/vernesong/OpenClash.git
