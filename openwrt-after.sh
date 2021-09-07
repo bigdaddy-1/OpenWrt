@@ -11,8 +11,4 @@
 #
 
 # Modify default IP
-#sed -i 's/192.168.1.1/192.168.50.5/g' package/base-files/files/bin/config_generate
-
-# 更换IP
-sed -i "2i uci set network.lan.ipaddr='10.0.0.1'" ./package/lean/default-settings/files/zzz-default-settings
-sed -i "3i uci commit network\n" ./package/lean/default-settings/files/zzz-default-settings
+sed -i 's/192.168.1.1/10.0.0.1/g' package/base-files/files/bin/config_generate
