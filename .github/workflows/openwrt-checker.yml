@@ -12,8 +12,8 @@
 name: Openwrt-Checker
 
 env:
-  REPO_URL: https://github.com/coolsnowwolf/lede
-  REPO_BRANCH: master
+  REPO_URL: https://github.com/1715173329/imoutowrt.git
+  REPO_BRANCH: master-ax3000-5.15
 
 on:
   workflow_dispatch:
