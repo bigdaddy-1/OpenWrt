@@ -14,6 +14,8 @@
 sed -i 's/192.168.1.1/10.0.0.1/g' package/base-files/files/bin/config_generate
 # Modify default NAME
 sed -i 's/ImmortalWrt/OpenWrt/g' package/base-files/files/bin/config_generate
+# Modify default dependency
+sed -i 's/uci-firewall/firewall/g' package/feeds/luci/luci-app-firewall/Makefile
 # Modify default OPENCLASH
 rm -rf ./feeds/luci/applications/luci-app-openclash/*
 cd ./feeds/luci/applications/luci-app-openclash
