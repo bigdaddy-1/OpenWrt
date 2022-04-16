@@ -15,7 +15,7 @@ sed -i 's/192.168.1.1/10.0.0.1/g' package/base-files/files/bin/config_generate
 # Modify default NAME
 sed -i 's/ImmortalWrt/OpenWrt/g' package/base-files/files/bin/config_generate
 # Modify default frpc-upx
-cat > ./feeds/packages/frpc-upx <<EOF
+cat > ./feeds/packages/frpc-upx << "EOF"
 diff --git a/net/frp/Makefile b/net/frp/Makefile
 index 0ea29e3..9df7180 100644
 --- a/net/frp/Makefile
