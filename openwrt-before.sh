@@ -21,16 +21,6 @@
 # Modify default frpc-upx
 git clone https://github.com/kuoruan/openwrt-upx.git package/openwrt-upx
 
-# Modify default OPENCLASH
-rm -rf ./feeds/luci/applications/luci-app-openclash/*
-cd ./feeds/luci/applications/luci-app-openclash
-git init
-git remote add -f origin https://github.com/vernesong/OpenClash.git
-git config core.sparsecheckout true
-echo "luci-app-openclash" >> .git/info/sparse-checkout
-git pull --depth 1 origin master
-git branch --set-upstream-to=origin/master master
-
 # Modify default FEEDS
 #mkdir ./package/lean/openclash
 #cd ./package/lean/openclash
