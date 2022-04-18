@@ -16,9 +16,9 @@ sed -i 's/192.168.1.1/10.0.0.1/g' package/base-files/files/bin/config_generate
 sed -i 's/ImmortalWrt/OpenWrt/g' package/base-files/files/bin/config_generate
 
 # Modify default frpc-upx
-sed -i 's/PKG_BUILD_DEPENDS:=golang\/host/PKG_BUILD_DEPENDS:=golang\/host upx\/host/g' package/frp/Makefile
-sed -i '43 i define Build/Compile\n\t$(STAGING_DIR_HOST)/bin/upx --lzma --best $(PKG_BUILD_DIR)/frpc\nendef\n' package/frp/Makefile
 rm -rf ./feeds/packages/net/frp
+sed -i 's/PKG_BUILD_DEPENDS:=golang\/host/PKG_BUILD_DEPENDS:=golang\/host upx\/host/g' package/frp/Makefile
+sed -i '43 i \  define Build/Compile\n\t$$(STAGING_DIR_HOST)/bin/upx --lzma --best $$(PKG_BUILD_DIR)/frpc\n\  endef\n' package/frp/Makefile
 
 # Modify default OPENCLASH
 rm -rf ./feeds/luci/applications/luci-app-openclash/*
