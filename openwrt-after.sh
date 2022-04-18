@@ -17,7 +17,7 @@ sed -i 's/ImmortalWrt/OpenWrt/g' package/base-files/files/bin/config_generate
 
 # Modify default frpc-upx
 sed -i 's/PKG_BUILD_DEPENDS:=golang\/host/PKG_BUILD_DEPENDS:=golang\/host upx\/host/g' feeds/packages/net/frp/Makefile
-sed -i '43 i define Build/Compile\n\t$(STAGING_DIR_HOST)/bin/upx --lzma --best $(GO_PKG_INSTALL_BIN_PATH)/frpc\nendef\n' feeds/packages/net/frp/Makefile
+sed -i '43 i define Build/Compile\n\t$(STAGING_DIR_HOST)/bin/upx --lzma --best $(GO_INSTALL_BIN_PATH)/frpc\nendef\n' feeds/packages/net/frp/Makefile
 
 # Modify default OPENCLASH
 rm -rf ./feeds/luci/applications/luci-app-openclash/*
