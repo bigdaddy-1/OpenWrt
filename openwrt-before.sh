@@ -20,7 +20,7 @@
 # 自定义插件
 # Modify default frpc-upx
 git clone https://github.com/kuoruan/openwrt-upx.git package/upx
-git clone https://github.com/kuoruan/openwrt-frp.git package/frp
+#git clone https://github.com/kuoruan/openwrt-frp.git package/frp
 
 # Modify default FEEDS
 #mkdir ./package/lean/openclash
