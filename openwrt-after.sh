@@ -17,8 +17,8 @@ sed -i 's/ImmortalWrt/OpenWrt/g' package/base-files/files/bin/config_generate
 
 # Modify default frpc-upx
 #rm -rf ./feeds/packages/net/frp
-sed -i 's/PKG_BUILD_DEPENDS:=golang\/host/PKG_BUILD_DEPENDS:=golang\/host upx\/host/g' ./feeds/packages/net/frp/Makefile
-sed -i '43 i \  define Build/Compile\n\t$$(call GoPackage/Build/Compile)\n\t$$(STAGING_DIR_HOST)/bin/upx --lzma --best $$(GO_PKG_BUILD_BIN_DIR)/frpc\n\  endef\n' ./feeds/packages/net/frp/Makefile
+sed -i 's/PKG_BUILD_DEPENDS:=golang\/host/PKG_BUILD_DEPENDS:=golang\/host upx\/host/g' package/frp/Makefile
+sed -i '43 i \  define Build/Compile\n\t$$(call GoPackage/Build/Compile)\n\t$$(STAGING_DIR_HOST)/bin/upx --lzma --best $$(GO_PKG_BUILD_BIN_DIR)/frpc\n\  endef\n' package/frp/Makefile
 
 # Modify default OPENCLASH
 rm -rf ./feeds/luci/applications/luci-app-openclash/*
@@ -29,4 +29,4 @@ git config core.sparsecheckout true
 echo "luci-app-openclash" >> .git/info/sparse-checkout
 git pull --depth 1 origin master
 git branch --set-upstream-to=origin/master master
-rm -rf ./root/etc/openclash/*.*  ./root/etc/openclash/*rule*
+rm -rf root/etc/openclash/*.*  root/etc/openclash/*rule*
