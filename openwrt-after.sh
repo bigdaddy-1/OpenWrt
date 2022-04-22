@@ -16,7 +16,8 @@ sed -i 's/192.168.1.1/10.0.0.1/g' package/base-files/files/bin/config_generate
 sed -i 's/ImmortalWrt/OpenWrt/g' package/base-files/files/bin/config_generate
 
 # Modify default frpc-upx
-#rm -rf ./package/frp
+sed -i 's/PKG_SOURCE_DATE:=.*/PKG_SOURCE_DATE:=2021-04-23/g' ./package/openwrt-upx/upx/Makefile
+sed -i 's/PKG_SOURCE_VERSION:=.*/PKG_SOURCE_VERSION:=2dae2a39972bc7c562dd3b02444336050a0b242e/g' ./package/openwrt-upx/upx/Makefile
 sed -i 's/PKG_VERSION:=.*/PKG_VERSION:=0.41.0/g' ./feeds/packages/net/frp/Makefile
 sed -i 's/PKG_HASH:=.*/PKG_HASH:=2655557d00a3d1bf7b8906586f4020db6cc7561faa8618a47640d8c67bac0c9e/g' ./feeds/packages/net/frp/Makefile
 sed -i '21 i GO_PKG_LDFLAGS:=-s -w' ./feeds/packages/net/frp/Makefile
