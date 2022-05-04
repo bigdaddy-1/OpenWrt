@@ -19,6 +19,7 @@ sed -i 's/ImmortalWrt/OpenWrt/g' package/base-files/files/bin/config_generate
 sed -i 's/PKG_SOURCE_DATE:=.*/PKG_SOURCE_DATE:=2021-04-23/g' ./package/openwrt-upx/upx/Makefile
 sed -i 's/PKG_SOURCE_VERSION:=.*/PKG_SOURCE_VERSION:=2dae2a39972bc7c562dd3b02444336050a0b242e/g' ./package/openwrt-upx/upx/Makefile
 mv ./feeds/packages/net/frp/files ./package/openwrt-frp/
+rm -rf ./feeds/packages/net/frp
 sed -i '34,66d' ./package/openwrt-frp/Makefile
 sed -i '33 i \\ndefine Package/frp/install\n\t$(call GoPackage/Package/Install/Bin,$(PKG_INSTALL_DIR))\n\n\t$(INSTALL_DIR) $(1)/usr/bin/\n\t$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/$(2) $(1)/usr/bin/\n\t$(INSTALL_DIR) $(1)/etc/frp/$(2).d/\n\t$(INSTALL_DATA) $(PKG_BUILD_DIR)/conf/$(2)_full.ini $(1)/etc/frp/$(2).d/\n\t$(INSTALL_DIR) $(1)/etc/config/\n\t$(INSTALL_CONF) ./files/$(2).config $(1)/etc/config/$(2)\n\t$(INSTALL_DIR) $(1)/etc/init.d/\n\t$(INSTALL_BIN) ./files/$(2).init $(1)/etc/init.d/$(2)\n\n\tif [ -r ./files/$(2).uci-defaults ]; then \\\n\t\t$(INSTALL_DIR) $(1)/etc/uci-defaults; \\\n\t\t$(INSTALL_DATA) ./files/$(2).uci-defaults $(1)/etc/uci-defaults/$(2); \\\n\tfi\nendef\ndefine Build/Compile\n\t$$(call GoPackage/Build/Compile)\n\t$$(STAGING_DIR_HOST)/bin/upx --lzma --best $$(GO_PKG_BUILD_BIN_DIR)/frpc\nendef' ./package/openwrt-frp/Makefile
 sed -i 's/PKG_BUILD_DEPENDS:=golang\/host/PKG_BUILD_DEPENDS:=golang\/host upx\/host/g' ./package/openwrt-frp/Makefile
