@@ -12,8 +12,10 @@
 
 # Modify default IP
 sed -i 's/192.168.1.1/10.0.0.1/g' package/base-files/files/bin/config_generate
-# Modify default patches
-curl -sL -o target/linux/x86/patches-5.4/500-backport-igc-5.15-driver.patch https://raw.githubusercontent.com/coolsnowwolf/lede/master/target/linux/x86/patches-5.4/500-backport-igc-5.15-driver.patch
+
+# Modify default NAME
+#sed -i 's/ImmortalWrt/OpenWrt/g' package/base-files/files/bin/config_generate
+
 # Modify default OPENCLASH
 rm -rf ./feeds/luci/applications/luci-app-openclash/*
 cd ./feeds/luci/applications/luci-app-openclash
