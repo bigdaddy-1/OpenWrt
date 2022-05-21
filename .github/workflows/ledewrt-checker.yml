@@ -9,10 +9,10 @@
 # Description: Source code update checker
 #
 
-name: Openwrt-Checker
+name: Ledewrt-Checker
 
 env:
-  REPO_URL: https://github.com/openwrt/openwrt.git
+  REPO_URL: https://github.com/coolsnowwolf/lede.git
   REPO_BRANCH: master
 
 on:

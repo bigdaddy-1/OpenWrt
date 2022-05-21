@@ -13,6 +13,5 @@
 # Modify default IP
 sed -i 's/192.168.1.1/10.0.0.1/g' package/base-files/files/bin/config_generate
 
-# Modify default Wifiset
-sed -i 's/set wireless.radio${devidx}.disabled=1/set wireless.radio${devidx}.disabled=0/g' package/kernel/mac80211/files/lib/wifi/mac80211.sh
-
+# Modify default NAME
+#sed -i 's/ImmortalWrt/OpenWrt/g' package/base-files/files/bin/config_generate
