@@ -20,8 +20,8 @@ on:
         default: 'false'
 
 env:
-  REPO_URL: https://github.com/1715173329/immortalwrt.git
-  REPO_BRANCH: master-ax3000
+  REPO_URL: https://github.com/immortalwrt/immortalwrt
+  REPO_BRANCH: openwrt-21.02
   FEEDS_CONF: feeds.conf.default
   CONFIG_FILE: .immortalwrt
   DIY_P1_SH: immortalwrt-before.sh
