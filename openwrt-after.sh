@@ -62,6 +62,6 @@ git init
 git remote add -f origin https://github.com/vernesong/OpenClash.git
 git config core.sparsecheckout true
 echo "luci-app-openclash" >> .git/info/sparse-checkout
-git pull --depth 1 origin master
+git pull --depth 1 origin dev
 git branch --set-upstream-to=origin/dev master
 rm -rf ./luci-app-openclash/root/etc/openclash/*.* ./luci-app-openclash/root/etc/openclash/*rule*
