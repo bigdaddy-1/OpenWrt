@@ -21,7 +21,7 @@ on:
 
 env:
   REPO_URL: https://github.com/1715173329/imoutowrt.git
-  REPO_BRANCH: openwrt-21.02
+  REPO_BRANCH: master-ax3000-5.15
   FEEDS_CONF: feeds.conf.default
   CONFIG_FILE: .immortalwrt
   DIY_P1_SH: immortalwrt-before.sh

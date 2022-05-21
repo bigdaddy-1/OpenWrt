@@ -9,11 +9,11 @@
 # Description: Source code update checker
 #
 
-name: Immortalwrt-Checker
+name: Openwrt-Checker
 
 env:
-  REPO_URL: https://github.com/1715173329/immortalwrt.git
-  REPO_BRANCH: master-ax3000
+  REPO_URL: https://github.com/1715173329/imoutowrt.git
+  REPO_BRANCH: master-ax3000-5.15
 
 on:
   workflow_dispatch:
@@ -31,6 +31,7 @@ jobs:
       run: |
         git clone --depth 1 $REPO_URL -b $REPO_BRANCH .
         echo "::set-output name=commitHash::$(git rev-parse HEAD)"
+
     - name: Compare Commit Hash
       id: cacheHash
       uses: actions/cache@v2
@@ -42,6 +43,7 @@ jobs:
       if: steps.cacheHash.outputs.cache-hit != 'true'
       run: |
         echo ${{ steps.getHash.outputs.commitHash }} | tee .commitHash
+
     - name: Trigger build
       if: steps.cacheHash.outputs.cache-hit != 'true'
       uses: peter-evans/repository-dispatch@v1

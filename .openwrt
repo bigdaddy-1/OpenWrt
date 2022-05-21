@@ -1,84 +1,53 @@
-CONFIG_TARGET_ipq807x=y
-CONFIG_TARGET_ipq807x_generic=y
-CONFIG_TARGET_ipq807x_generic_DEVICE_xiaomi_ax3600=y
-CONFIG_LIBCURL_COOKIES=y
-CONFIG_LIBCURL_CRYPTO_AUTH=y
-CONFIG_LIBCURL_FILE=y
-CONFIG_LIBCURL_FTP=y
-CONFIG_LIBCURL_HTTP=y
-CONFIG_LIBCURL_NGHTTP2=y
-CONFIG_LIBCURL_OPENSSL=y
-CONFIG_LIBCURL_PROXY=y
-CONFIG_LIBCURL_TFTP=y
-CONFIG_LIBCURL_THREADED_RESOLVER=y
-CONFIG_LIBCURL_TLS_SRP=y
-CONFIG_LIBCURL_UNIX_SOCKETS=y
-CONFIG_PACKAGE_autocore-arm=y
-CONFIG_PACKAGE_bash=y
-# CONFIG_PACKAGE_block-mount is not set
-CONFIG_PACKAGE_ca-certificates=y
-CONFIG_PACKAGE_coreutils=y
-CONFIG_PACKAGE_coreutils-nohup=y
-CONFIG_PACKAGE_curl=y
-CONFIG_PACKAGE_frpc=y
-CONFIG_PACKAGE_ip-full=y
-CONFIG_PACKAGE_iptables-mod-extra=y
-# CONFIG_PACKAGE_kmod-crypto-crc32c is not set
-CONFIG_PACKAGE_kmod-inet-diag=y
-CONFIG_PACKAGE_kmod-ipt-extra=y
-# CONFIG_PACKAGE_kmod-lib-crc32c is not set
+CONFIG_TARGET_x86=y
+CONFIG_TARGET_x86_64=y
+CONFIG_TARGET_x86_64_DEVICE_generic=y
+# CONFIG_PACKAGE_UnblockNeteaseMusic-Go is not set
+# CONFIG_PACKAGE_adbyby is not set
+# CONFIG_PACKAGE_etherwake is not set
+# CONFIG_PACKAGE_iptables-mod-ipsec is not set
+# CONFIG_PACKAGE_kmod-crypto-cbc is not set
+# CONFIG_PACKAGE_kmod-crypto-deflate is not set
+# CONFIG_PACKAGE_kmod-crypto-des is not set
+# CONFIG_PACKAGE_kmod-crypto-echainiv is not set
+# CONFIG_PACKAGE_kmod-crypto-hmac is not set
+# CONFIG_PACKAGE_kmod-crypto-kpp is not set
+# CONFIG_PACKAGE_kmod-crypto-md5 is not set
+# CONFIG_PACKAGE_kmod-ipsec is not set
+# CONFIG_PACKAGE_kmod-ipt-ipsec is not set
+# CONFIG_PACKAGE_kmod-ipt-offload is not set
+# CONFIG_PACKAGE_kmod-iptunnel6 is not set
+# CONFIG_PACKAGE_kmod-nf-conntrack-netlink is not set
 # CONFIG_PACKAGE_kmod-nf-flow is not set
-# CONFIG_PACKAGE_kmod-nft-core is not set
-# CONFIG_PACKAGE_kmod-nft-nat is not set
-# CONFIG_PACKAGE_kmod-nft-offload is not set
-# CONFIG_PACKAGE_kmod-nls-base is not set
-CONFIG_PACKAGE_kmod-tcp-bbr=y
-CONFIG_PACKAGE_kmod-tun=y
-# CONFIG_PACKAGE_kmod-usb-core is not set
-# CONFIG_PACKAGE_kmod-usb-dwc3 is not set
-# CONFIG_PACKAGE_kmod-usb-dwc3-qcom is not set
-# CONFIG_PACKAGE_kmod-usb3 is not set
-CONFIG_PACKAGE_libbpf=y
-CONFIG_PACKAGE_libcap=y
-CONFIG_PACKAGE_libcap-bin=y
-CONFIG_PACKAGE_libcap-bin-capsh-shell="/bin/sh"
-CONFIG_PACKAGE_libcurl=y
-CONFIG_PACKAGE_libdb47=y
-CONFIG_PACKAGE_libelf=y
-CONFIG_PACKAGE_libncurses=y
-CONFIG_PACKAGE_libnghttp2=y
-CONFIG_PACKAGE_libreadline=y
-CONFIG_PACKAGE_libruby=y
-CONFIG_PACKAGE_libuuid=y
-CONFIG_PACKAGE_libwebsockets-full=y
-CONFIG_PACKAGE_libyaml=y
-CONFIG_PACKAGE_luci-app-autoreboot=y
-# CONFIG_PACKAGE_luci-app-cpufreq is not set
-CONFIG_PACKAGE_luci-app-filetransfer=y
-CONFIG_PACKAGE_luci-app-frpc=y
-CONFIG_PACKAGE_luci-app-netdata=y
-CONFIG_PACKAGE_luci-app-openclash=y
-CONFIG_PACKAGE_luci-app-ttyd=y
+# CONFIG_PACKAGE_kmod-tcp-bbr is not set
+# CONFIG_PACKAGE_kmod-wireguard is not set
+# CONFIG_PACKAGE_libminiupnpc is not set
+# CONFIG_PACKAGE_libnatpmp is not set
+# CONFIG_PACKAGE_libstdcpp is not set
+# CONFIG_PACKAGE_luci-app-accesscontrol is not set
+# CONFIG_PACKAGE_luci-app-adbyby-plus is not set
+# CONFIG_PACKAGE_luci-app-arpbind is not set
+# CONFIG_PACKAGE_luci-app-autoreboot is not set
+# CONFIG_PACKAGE_luci-app-ddns is not set
+# CONFIG_PACKAGE_luci-app-ipsec-vpnd is not set
+# CONFIG_PACKAGE_luci-app-nlbwmon is not set
+# CONFIG_PACKAGE_luci-app-ramfree is not set
 # CONFIG_PACKAGE_luci-app-turboacc is not set
-CONFIG_PACKAGE_luci-i18n-autoreboot-zh-cn=y
-CONFIG_PACKAGE_luci-i18n-filetransfer-zh-cn=y
-CONFIG_PACKAGE_luci-i18n-frpc-zh-cn=y
-CONFIG_PACKAGE_luci-i18n-netdata-zh-cn=y
-CONFIG_PACKAGE_luci-i18n-ttyd-zh-cn=y
-CONFIG_PACKAGE_netdata=y
+# CONFIG_PACKAGE_luci-app-unblockmusic is not set
+# CONFIG_PACKAGE_luci-app-upnp is not set
+# CONFIG_PACKAGE_luci-app-vlmcsd is not set
+# CONFIG_PACKAGE_luci-app-vsftpd is not set
+# CONFIG_PACKAGE_luci-app-wireguard is not set
+# CONFIG_PACKAGE_luci-app-wol is not set
+# CONFIG_PACKAGE_luci-app-xlnetacc is not set
+# CONFIG_PACKAGE_luci-app-zerotier is not set
+# CONFIG_PACKAGE_luci-proto-wireguard is not set
+# CONFIG_PACKAGE_miniupnpd is not set
+# CONFIG_PACKAGE_nlbwmon is not set
 # CONFIG_PACKAGE_pdnsd-alt is not set
-CONFIG_PACKAGE_ruby=y
-CONFIG_PACKAGE_ruby-bigdecimal=y
-CONFIG_PACKAGE_ruby-date=y
-CONFIG_PACKAGE_ruby-dbm=y
-CONFIG_PACKAGE_ruby-digest=y
-CONFIG_PACKAGE_ruby-enc=y
-CONFIG_PACKAGE_ruby-forwardable=y
-CONFIG_PACKAGE_ruby-pstore=y
-CONFIG_PACKAGE_ruby-psych=y
-CONFIG_PACKAGE_ruby-stringio=y
-CONFIG_PACKAGE_ruby-strscan=y
-CONFIG_PACKAGE_ruby-yaml=y
-CONFIG_PACKAGE_terminfo=y
-CONFIG_PACKAGE_ttyd=y
-CONFIG_PACKAGE_zlib=y
+# CONFIG_PACKAGE_strongswan is not set
+# CONFIG_PACKAGE_vlmcsd is not set
+# CONFIG_PACKAGE_vsftpd-alt is not set
+# CONFIG_PACKAGE_wireguard-tools is not set
+# CONFIG_PACKAGE_wol is not set
+# CONFIG_PACKAGE_zerotier is not set
+CONFIG_TARGET_ROOTFS_PARTSIZE=2048
