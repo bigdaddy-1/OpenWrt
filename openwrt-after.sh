@@ -26,6 +26,5 @@ sed -i '44 i define Build/Compile\n\t$(call GoPackage/Build/Compile)\n\t$(STAGIN
 # Modify default ttyd
 sed -i 's/services/system/g' ./feeds/luci/applications/luci-app-ttyd/root/usr/share/luci/menu.d/luci-app-ttyd.json
 
-# Link files
-ln -sf ./feeds/luci/applications/luci-app-openclash ./package/luci-app-openclash
-ln -sf ./feeds/luci/applications/luci-app-netdata ./package/luci-app-netdata
+# Modify default netdata
+sed -i 's/\.\.\/\.\.\/luci\.mk/$(TOPDIR)\/feeds\/luci\/luci\.mk/g' ./package/luci-app-netdata/Makefile
