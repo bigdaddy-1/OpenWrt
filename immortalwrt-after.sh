@@ -57,8 +57,8 @@ EOF
 
 # Modify default OPENCLASH
 rm -rf ./feeds/luci/applications/luci-app-openclash
-mkdir -p ./feeds/luci/applications/luci-updata
-cd ./feeds/luci/applications/luci-updata
+mkdir -p ./feeds/luci/applications/luci-data
+cd ./feeds/luci/applications/luci-data
 git init
 git remote add -f origin https://github.com/vernesong/OpenClash.git
 git config core.sparsecheckout true

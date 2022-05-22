@@ -16,3 +16,15 @@
 # Add a feed source
 #echo 'src-git helloworld https://github.com/fw876/helloworld' >>feeds.conf.default
 #echo 'src-git passwall https://github.com/xiaorouji/openwrt-passwall' >>feeds.conf.default
+
+# Modify default OPENCLASH
+mkdir -p ./package/luci-data
+cd ./package/luci-data
+git init
+git remote add -f origin https://github.com/vernesong/OpenClash.git
+git config core.sparsecheckout true
+echo "luci-app-openclash" >> .git/info/sparse-checkout
+git pull --depth 1 origin dev
+git branch --set-upstream-to=origin/dev master
+rm -rf ./luci-app-openclash/root/etc/openclash/*.* ./luci-app-openclash/root/etc/openclash/*rule*
+mv ./luci-app-openclash ..

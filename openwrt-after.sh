@@ -26,23 +26,6 @@ sed -i '44 i define Build/Compile\n\t$(call GoPackage/Build/Compile)\n\t$(STAGIN
 # Modify default ttyd
 sed -i 's/services/system/g' ./feeds/luci/applications/luci-app-ttyd/root/usr/share/luci/menu.d/luci-app-ttyd.json
 
-# Modify default OPENCLASH
-mkdir -p ./feeds/luci/applications/luci-updata
-cd ./feeds/luci/applications/luci-updata
-git init
-git remote add -f origin https://github.com/vernesong/OpenClash.git
-git config core.sparsecheckout true
-echo "luci-app-openclash" >> .git/info/sparse-checkout
-git pull --depth 1 origin dev
-git branch --set-upstream-to=origin/dev master
-rm -rf ./luci-app-openclash/root/etc/openclash/*.* ./luci-app-openclash/root/etc/openclash/*rule*
-mv ./luci-app-openclash ..
-
-# Modify default netdata
-rm -rf .git
-git init
-git remote add -f origin https://github.com/immortalwrt/luci.git
-git config core.sparsecheckout true
-echo "luci-app-netdata" >> .git/info/sparse-checkout
-git pull origin master
-mv ./applications/luci-app-netdata/ .. && cd ../../../.. && ./scripts/feeds update -a && ./scripts/feeds install -a
+# Link files
+ln -sf ./feeds/luci/applications/luci-app-openclash ./package/luci-app-openclash
+ln -sf ./feeds/luci/applications/luci-app-netdata ./package/luci-app-netdata
