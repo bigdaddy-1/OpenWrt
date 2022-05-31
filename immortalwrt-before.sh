@@ -19,8 +19,8 @@
 
 # 自定义插件
 # Modify default frpc-upx
-git clone https://github.com/kuoruan/openwrt-upx.git package/openwrt-upx
-git clone https://github.com/kuoruan/openwrt-frp.git package/openwrt-frp
+git clone https://github.com/kuoruan/openwrt-upx.git ./package/openwrt-upx
+git clone https://github.com/kuoruan/openwrt-frp.git ./package/openwrt-frp
 
 # Modify default FEEDS
 sed -i 's/\^.*//g' ./feeds.conf.default
