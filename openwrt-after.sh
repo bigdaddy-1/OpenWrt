@@ -64,3 +64,6 @@ sed -i 's/services/system/g' ./feeds/luci/applications/luci-app-ttyd/root/usr/sh
 
 # Modify default netdata
 sed -i 's/\.\.\/\.\.\/luci\.mk/$(TOPDIR)\/feeds\/luci\/luci\.mk/g' ./package/luci-app-netdata/Makefile
+
+# Modify default zerotier
+sed -i '24d' ./package/luci-app-zerotier/luasrc/model/cbi/zerotier/manual.lua
