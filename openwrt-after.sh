@@ -67,3 +67,7 @@ sed -i 's/\.\.\/\.\.\/luci\.mk/$(TOPDIR)\/feeds\/luci\/luci\.mk/g' ./package/luc
 
 # Modify default zerotier
 sed -i '24d' ./package/luci-app-zerotier/luasrc/model/cbi/zerotier/manual.lua
+
+# Modify default mosdns
+sed -i 's/PKG_BUILD_DEPENDS:=golang\/host/PKG_BUILD_DEPENDS:=golang\/host upx\/host/g' ./package/mosdns/Makefile
+sed -i '50 i define Build/Compile\n\t$$(call GoPackage/Build/Compile)\n\t$$(STAGING_DIR_HOST)/bin/upx --lzma --best $$(GO_PKG_BUILD_BIN_DIR)/mosdns\nendef\n' ./package/mosdns/Makefile

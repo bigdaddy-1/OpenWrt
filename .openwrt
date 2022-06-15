@@ -127,6 +127,7 @@ CONFIG_PACKAGE_luci-mod-system=y
 CONFIG_PACKAGE_luci-proto-ipv6=y
 CONFIG_PACKAGE_luci-proto-ppp=y
 CONFIG_PACKAGE_luci-theme-bootstrap=y
+CONFIG_PACKAGE_mosdns=y
 CONFIG_PACKAGE_netdata=y
 # CONFIG_PACKAGE_nftables-json is not set
 CONFIG_PACKAGE_nss-firmware-ipq8074=y

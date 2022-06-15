@@ -42,3 +42,12 @@ git config core.sparsecheckout true
 echo "luci-app-netdata" >> .git/info/sparse-checkout
 git pull origin master
 mv ./applications/luci-app-netdata/ ..
+
+# Modify default Mosdns
+rm -rf .git
+git init
+git remote add -f origin https://github.com/immortalwrt/packages.git
+git config core.sparsecheckout true
+echo "mosdns" >> .git/info/sparse-checkout
+git pull origin master
+mv ./mosdns/ ..
