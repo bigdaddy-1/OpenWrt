@@ -34,14 +34,14 @@ git branch --set-upstream-to=origin/dev master
 rm -rf ./luci-app-openclash/root/etc/openclash/*.* ./luci-app-openclash/root/etc/openclash/*rule*
 mv ./luci-app-openclash ..
 
-# Modify default NETDATA
-rm -rf .git
-git init
-git remote add -f origin https://github.com/immortalwrt/luci.git
-git config core.sparsecheckout true
-echo "luci-app-netdata" >> .git/info/sparse-checkout
-git pull origin master
-mv ./applications/luci-app-netdata/ ..
+# # Modify default NETDATA
+# rm -rf .git
+# git init
+# git remote add -f origin https://github.com/immortalwrt/luci.git
+# git config core.sparsecheckout true
+# echo "luci-app-netdata" >> .git/info/sparse-checkout
+# git pull origin master
+# mv ./applications/luci-app-netdata/ ..
 
 # Modify default Mosdns
 rm -rf .git

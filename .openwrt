@@ -101,7 +101,6 @@ CONFIG_PACKAGE_libruby=y
 CONFIG_PACKAGE_libstdcpp=y
 CONFIG_PACKAGE_libubus-lua=y
 # CONFIG_PACKAGE_libucode is not set
-CONFIG_PACKAGE_libuuid=y
 CONFIG_PACKAGE_libuv=y
 CONFIG_PACKAGE_libwebsockets-full=y
 CONFIG_PACKAGE_libxtables=y
@@ -109,7 +108,6 @@ CONFIG_PACKAGE_libyaml=y
 CONFIG_PACKAGE_lua=y
 CONFIG_PACKAGE_luci=y
 CONFIG_PACKAGE_luci-app-firewall=y
-CONFIG_PACKAGE_luci-app-netdata=y
 CONFIG_PACKAGE_luci-app-openclash=y
 CONFIG_PACKAGE_luci-app-opkg=y
 CONFIG_PACKAGE_luci-app-ttyd=y
@@ -128,7 +126,6 @@ CONFIG_PACKAGE_luci-proto-ipv6=y
 CONFIG_PACKAGE_luci-proto-ppp=y
 CONFIG_PACKAGE_luci-theme-bootstrap=y
 CONFIG_PACKAGE_mosdns=y
-CONFIG_PACKAGE_netdata=y
 # CONFIG_PACKAGE_nftables-json is not set
 CONFIG_PACKAGE_nss-firmware-ipq8074=y
 CONFIG_PACKAGE_qca-ssdk-shell=y

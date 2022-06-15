@@ -62,8 +62,8 @@ EOF
 # Modify default ttyd
 sed -i 's/services/system/g' ./feeds/luci/applications/luci-app-ttyd/root/usr/share/luci/menu.d/luci-app-ttyd.json
 
-# Modify default netdata
-sed -i 's/\.\.\/\.\.\/luci\.mk/$(TOPDIR)\/feeds\/luci\/luci\.mk/g' ./package/luci-app-netdata/Makefile
+# # Modify default netdata
+# sed -i 's/\.\.\/\.\.\/luci\.mk/$(TOPDIR)\/feeds\/luci\/luci\.mk/g' ./package/luci-app-netdata/Makefile
 
 # Modify default zerotier
 sed -i '24d' ./package/luci-app-zerotier/luasrc/model/cbi/zerotier/manual.lua
