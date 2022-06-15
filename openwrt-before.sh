@@ -50,4 +50,4 @@ git remote add -f origin https://github.com/immortalwrt/packages.git
 git config core.sparsecheckout true
 echo "mosdns" >> .git/info/sparse-checkout
 git pull origin master
-mv ./mosdns/ ..
+mv ./net/mosdns/ ..
