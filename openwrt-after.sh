@@ -70,5 +70,116 @@ sed -i '24d' ./package/luci-app-zerotier/luasrc/model/cbi/zerotier/manual.lua
 
 # Modify default mosdns
 sed -i 's/PKG_BUILD_DEPENDS:=golang\/host/PKG_BUILD_DEPENDS:=golang\/host upx\/host/g' ./package/mosdns/Makefile
+sed -i '22 i GO_PKG_LDFLAGS:=-s -w' ./package/mosdns/Makefile
 sed -i '50 i define Build/Compile\n\t$$(call GoPackage/Build/Compile)\n\t$$(STAGING_DIR_HOST)/bin/upx --lzma --best $$(GO_PKG_BUILD_BIN_DIR)/mosdns\nendef\n' ./package/mosdns/Makefile
 sed -i 's/\.\.\/\.\./$(TOPDIR)\/feeds\/packages/g' ./package/mosdns/Makefile
+cat > ./package/mosdns/files/config.yaml << \EOF
+log:
+  level: error
+  file: ""
+
+plugin:
+  - tag: main_server
+    type: server
+    args:
+      entry:
+        - main_sequence
+        - modify_ttl
+
+      server:
+        - protocol: udp
+          addr: 127.0.0.1:5353
+        - protocol: tcp
+          addr: 127.0.0.1:5353
+        - protocol: udp
+          addr: "[::1]:5353"
+        - protocol: tcp
+          addr: "[::1]:5353"
+
+  - tag: main_sequence
+    type: sequence
+    args:
+      exec:
+        - if:
+            - query_is_ad_domain
+          exec:
+            - _block_with_nxdomain
+            - _return
+
+        - mem_cache
+
+        - if:
+            - query_is_local_domain
+            - "!_query_is_common"
+          exec:
+            - forward_local
+            - _return
+
+        - if:
+            - query_is_non_local_domain
+          exec:
+            - _prefer_ipv4
+            - forward_remote
+            - _return
+
+        - primary:
+            - forward_local
+            - if:
+                - "!response_has_local_ip"
+              exec:
+                - _drop_response
+          secondary:
+            - _prefer_ipv4
+            - forward_remote
+          fast_fallback: 200
+          always_standby: true
+
+  - tag: "mem_cache"
+    type: "cache"
+    args:
+      size: 1024
+
+  - tag: "modify_ttl"
+    type: "ttl"
+    args:
+      minimal_ttl: 300
+      maximum_ttl: 3600
+
+  - tag: forward_local
+    type: fast_forward
+    args:
+      upstream:
+        - addr: 223.5.5.5
+        - addr: 119.29.29.29
+
+  - tag: forward_remote
+    type: fast_forward
+    args:
+      upstream:
+        - addr: https://8.8.8.8/dns-query
+        - addr: https://1.1.1.1/dns-query
+
+  - tag: query_is_local_domain
+    type: query_matcher
+    args:
+      domain:
+        - "ext:/tmp/geosite.dat:cn"
+
+  - tag: query_is_non_local_domain
+    type: query_matcher
+    args:
+      domain:
+        - "ext:/tmp/geosite.dat:geolocation-!cn"
+
+  - tag: query_is_ad_domain
+    type: query_matcher
+    args:
+      domain:
+        - "ext:/tmp/geosite.dat:category-ads-all"
+
+  - tag: response_has_local_ip
+    type: response_matcher
+    args:
+      ip:
+        - "ext:/tmp/geoip.dat:cn"
+EOF
