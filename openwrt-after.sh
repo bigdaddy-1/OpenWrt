@@ -78,7 +78,7 @@ ${{curl -sL -o /tmp/geoip.dat https://cdn.jsdelivr.net/gh/Loyalsoldier/geoip@rel
 ${{curl -sL -o /tmp/geosite.dat https://cdn.jsdelivr.net/gh/Loyalsoldier/v2ray-rules-dat@release/geosite.dat}}
 
 log:
-  level: error
+  level: warn
   file: ''
 
 plugin:
@@ -86,7 +86,6 @@ plugin:
     type: server
     args:
       entry:
-        - hosts
         - main_sequence
         - modify_ttl
 
@@ -107,35 +106,22 @@ plugin:
             - _return
         - if:
             - query_is_local_domain
-            - '!_query_is_common'
+            - response_has_local_ip
           exec:
-            - forward_local
-            - _return
-        - if:
-            - query_is_non_local_domain
-          exec:
-            - _prefer_ipv6
-            - forward_remote
-            - _return
-
-        - primary:
-            - forward_local
-            - if:
-                - '!response_has_local_ip'
-              exec:
-                - _drop_response
-          secondary:
+            - primary:
+                - _prefer_ipv6
+                - forward_local
+                - _return
+              secondary:
+                - _prefer_ipv4
+                - forward_local
+                - _return
+              fast_fallback: 100
+              always_standby: true
+          else_exec:
             - _prefer_ipv4
             - forward_remote
-          fast_fallback: 200
-          always_standby: true
-
-  - tag: 'hosts'
-    type: hosts
-    args:
-      hosts:
-        - '*.udomain.ml 132.226.231.28'
-        - '*.ddomain.ml 132.226.229.144'
+            - _return
 
   - tag: 'modify_ttl'
     type: ttl
@@ -157,6 +143,12 @@ plugin:
         - addr: https://8.8.8.8/dns-query
         - addr: https://1.1.1.1/dns-query
 
+  - tag: 'query_is_ad_domain'
+    type: query_matcher
+    args:
+      domain:
+        - 'ext:/tmp/geosite.dat:category-ads-all'
+
   - tag: 'query_is_local_domain'
     type: query_matcher
     args:
@@ -168,12 +160,6 @@ plugin:
     args:
       domain:
         - 'ext:/tmp/geosite.dat:geolocation-!cn'
-
-  - tag: 'query_is_ad_domain'
-    type: query_matcher
-    args:
-      domain:
-        - 'ext:/tmp/geosite.dat:category-ads-all'
 
   - tag: 'response_has_local_ip'
     type: response_matcher
