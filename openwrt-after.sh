@@ -69,66 +69,26 @@ sed -i 's/services/system/g' ./feeds/luci/applications/luci-app-ttyd/root/usr/sh
 sed -i '24d' ./package/luci-app-zerotier/luasrc/model/cbi/zerotier/manual.lua
 
 # Modify default mosdns
+sed -i 's/PKG_VERSION:=.*/PKG_VERSION:=4.0.0/g' ./package/mosdns/Makefile
+sed -i 's/PKG_HASH:=.*/PKG_HASH:=skip/g' ./package/mosdns/Makefile
 sed -i 's/PKG_BUILD_DEPENDS:=golang\/host/PKG_BUILD_DEPENDS:=golang\/host upx\/host/g' ./package/mosdns/Makefile
 sed -i '22 i GO_PKG_LDFLAGS:=-s -w' ./package/mosdns/Makefile
 sed -i '50 i define Build/Compile\n\t$$(call GoPackage/Build/Compile)\n\t$$(STAGING_DIR_HOST)/bin/upx --lzma --best $$(GO_PKG_BUILD_BIN_DIR)/mosdns\nendef\n' ./package/mosdns/Makefile
 sed -i 's/\.\.\/\.\./$(TOPDIR)\/feeds\/packages/g' ./package/mosdns/Makefile
 cat > ./package/mosdns/files/config.yaml << \EOF
-${{curl -sL -o /tmp/geoip.dat https://cdn.jsdelivr.net/gh/Loyalsoldier/geoip@release/cn.dat}}
-${{curl -sL -o /tmp/geosite.dat https://cdn.jsdelivr.net/gh/Loyalsoldier/v2ray-rules-dat@release/geosite.dat}}
-
 log:
   level: warn
   file: ''
 
-plugin:
-  - tag: main_server
-    type: server
-    args:
-      entry:
-        - main_sequence
-        - modify_ttl
+data_providers:
+  - tag: geosite
+    file: /tmp/geosite.dat
+    auto_reload: true
+  - tag: geoip
+    file: /tmp/geoip.dat
+    auto_reload: true
 
-      server:
-        - protocol: udp
-          addr: 127.0.0.1:5353
-        - protocol: udp
-          addr: '[::1]:5353'
-
-  - tag: main_sequence
-    type: sequence
-    args:
-      exec:
-        - if:
-            - query_is_ad_domain
-          exec:
-            - _block_with_nxdomain
-            - _return
-        - if:
-            - query_is_local_domain
-            - response_has_local_ip
-          exec:
-            - primary:
-                - _prefer_ipv6
-                - forward_local
-                - _return
-              secondary:
-                - _prefer_ipv4
-                - forward_local
-                - _return
-              fast_fallback: 100
-              always_standby: true
-          else_exec:
-            - _prefer_ipv4
-            - forward_remote
-            - _return
-
-  - tag: 'modify_ttl'
-    type: ttl
-    args:
-      minimal_ttl: 300
-      maximum_ttl: 3600
-
+plugins:
   - tag: 'forward_local'
     type: fast_forward
     args:
@@ -140,30 +100,68 @@ plugin:
     type: fast_forward
     args:
       upstream:
-        - addr: https://8.8.8.8/dns-query
-        - addr: https://1.1.1.1/dns-query
+        - addr: 8.8.8.8
+        - addr: 1.1.1.1
 
-  - tag: 'query_is_ad_domain'
+  - tag: query_is_local_domain
     type: query_matcher
     args:
       domain:
-        - 'ext:/tmp/geosite.dat:category-ads-all'
+        - 'provider:geosite:cn'
 
-  - tag: 'query_is_local_domain'
+  - tag: query_is_non_local_domain
     type: query_matcher
     args:
       domain:
-        - 'ext:/tmp/geosite.dat:cn'
-
-  - tag: 'query_is_non_local_domain'
+        - 'provider:geosite:geolocation-!cn'
+  - tag: query_is_ad_domain
     type: query_matcher
     args:
       domain:
-        - 'ext:/tmp/geosite.dat:geolocation-!cn'
+        - 'provider:geosite:category-ads-all'
 
-  - tag: 'response_has_local_ip'
+  - tag: response_has_local_ip
     type: response_matcher
     args:
       ip:
-        - 'ext:/tmp/geoip.dat:cn'
+        - 'provider:geoip:cn'
+
+  - tag: main_sequence
+    type: sequence
+    args:
+      exec:
+      - _single_flight
+      - _misc_optm
+        - if: 'query_is_ad_domain'
+          exec:
+            - _new_nxdomain_response
+            - _return
+
+        - if: 'query_is_local_domain'
+          exec:
+            - forward_local
+            - _return
+
+        - if: 'query_is_non_local_domain'
+          exec:
+            - forward_remote
+            - _return
+
+        - primary:
+            - forward_local
+            - if: '(! response_has_local_ip) && [_response_valid_answer]'
+              exec:
+                - _drop_response
+          secondary:
+            - _prefer_ipv4
+            - forward_remote
+          fast_fallback: 200
+
+servers:
+  - exec: main_sequence
+    listeners:
+      - protocol: udp
+        addr: 127.0.0.1:5353
+      - protocol: tcp
+        addr: 127.0.0.1:5353
 EOF
