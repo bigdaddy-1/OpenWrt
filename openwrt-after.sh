@@ -69,8 +69,10 @@ sed -i 's/services/system/g' ./feeds/luci/applications/luci-app-ttyd/root/usr/sh
 sed -i '24d' ./package/luci-app-zerotier/luasrc/model/cbi/zerotier/manual.lua
 
 # Modify default mosdns
-sed -i 's/PKG_VERSION:=.*/PKG_VERSION:=4.0.0/g' ./package/mosdns/Makefile
-sed -i 's/PKG_HASH:=.*/PKG_HASH:=skip/g' ./package/mosdns/Makefile
+mosdns_version=$(curl -fs --max-time 10 "https://api.github.com/repos/IrineSistiana/mosdns/releases/latest" | jq -r '.tag_name')
+mosdns_hash=$(curl https://codeload.github.com/IrineSistiana/mosdns/tar.gz/v$mosdns_version | sha256sum )
+sed -i "s/PKG_VERSION:=.*/PKG_VERSION:=$mosdns_version/g" ./package/mosdns/Makefile
+sed -i "s/PKG_HASH:=.*/PKG_HASH:=$mosdns_hash/g" ./package/mosdns/Makefile
 sed -i 's/PKG_BUILD_DEPENDS:=golang\/host/PKG_BUILD_DEPENDS:=golang\/host upx\/host/g' ./package/mosdns/Makefile
 sed -i '22 i GO_PKG_LDFLAGS:=-s -w' ./package/mosdns/Makefile
 sed -i '50 i define Build/Compile\n\t$$(call GoPackage/Build/Compile)\n\t$$(STAGING_DIR_HOST)/bin/upx --lzma --best $$(GO_PKG_BUILD_BIN_DIR)/mosdns\nendef\n' ./package/mosdns/Makefile
