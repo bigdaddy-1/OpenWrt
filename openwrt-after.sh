@@ -19,8 +19,8 @@ sed -i 's/set wireless.radio${devidx}.disabled=1/set wireless.radio${devidx}.dis
 # Modify default frpc-upx
 sed -i 's/PKG_SOURCE_DATE:=.*/PKG_SOURCE_DATE:=2021-04-23/g' ./package/openwrt-upx/upx/Makefile
 sed -i 's/PKG_SOURCE_VERSION:=.*/PKG_SOURCE_VERSION:=2dae2a39972bc7c562dd3b02444336050a0b242e/g' ./package/openwrt-upx/upx/Makefile
-frp_version=$(curl -fs --max-time 10 "https://api.github.com/repos/fatedier/frp/releases/latest" | jq -r '.tag_name')
-frp_hash=$(curl https://codeload.github.com/IrineSistiana/mosdns/tar.gz/v$frp_version | sha256sum | awk '{print $1}')
+frp_version=$(curl -fs --max-time 10 "https://api.github.com/repos/fatedier/frp/releases/latest" | jq -r '.tag_name' | sed 's/v//')
+frp_hash=$(curl https://codeload.github.com/fatedier/frp/tar.gz/v$frp_version | sha256sum | awk '{print $1}')
 sed -i "s/PKG_VERSION:=.*/PKG_VERSION:=$frp_version/g" ./feeds/packages/net/frp/Makefile
 sed -i "s/PKG_HASH:=.*/PKG_HASH:=$frp_hash/g" ./feeds/packages/net/frp/Makefile
 sed -i 's/PKG_BUILD_DEPENDS:=golang\/host/PKG_BUILD_DEPENDS:=golang\/host upx\/host/g' ./feeds/packages/net/frp/Makefile
@@ -37,7 +37,7 @@ sed -i 's/services/system/g' ./feeds/luci/applications/luci-app-ttyd/root/usr/sh
 sed -i '24d' ./package/luci-app-zerotier/luasrc/model/cbi/zerotier/manual.lua
 
 # Modify default mosdns
-mosdns_version=$(curl -fs --max-time 10 "https://api.github.com/repos/IrineSistiana/mosdns/releases/latest" | jq -r '.tag_name')
+mosdns_version=$(curl -fs --max-time 10 "https://api.github.com/repos/IrineSistiana/mosdns/releases/latest" | jq -r '.tag_name' | sed 's/v//')
 mosdns_hash=$(curl https://codeload.github.com/IrineSistiana/mosdns/tar.gz/v$mosdns_version | sha256sum | awk '{print $1}')
 sed -i "s/PKG_VERSION:=.*/PKG_VERSION:=$mosdns_version/g" ./package/mosdns/Makefile
 sed -i "s/PKG_HASH:=.*/PKG_HASH:=$mosdns_hash/g" ./package/mosdns/Makefile
