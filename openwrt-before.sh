@@ -19,7 +19,6 @@
 
 # Modify default frpc-upx
 git clone https://github.com/kuoruan/openwrt-upx.git ./package/openwrt-upx
-git clone https://github.com/kuoruan/openwrt-frp.git ./package/openwrt-frp
 git clone https://github.com/rufengsuixing/luci-app-zerotier.git ./package/luci-app-zerotier
 
 # Modify default OPENCLASH
