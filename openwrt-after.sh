@@ -70,7 +70,7 @@ sed -i '24d' ./package/luci-app-zerotier/luasrc/model/cbi/zerotier/manual.lua
 
 # Modify default mosdns
 mosdns_version=$(curl -fs --max-time 10 "https://api.github.com/repos/IrineSistiana/mosdns/releases/latest" | jq -r '.tag_name')
-mosdns_hash=$(curl https://codeload.github.com/IrineSistiana/mosdns/tar.gz/v$mosdns_version | sha256sum )
+mosdns_hash=$(curl https://codeload.github.com/IrineSistiana/mosdns/tar.gz/v$mosdns_version | sha256sum | awk '{print $1}')
 sed -i "s/PKG_VERSION:=.*/PKG_VERSION:=$mosdns_version/g" ./package/mosdns/Makefile
 sed -i "s/PKG_HASH:=.*/PKG_HASH:=$mosdns_hash/g" ./package/mosdns/Makefile
 sed -i 's/PKG_BUILD_DEPENDS:=golang\/host/PKG_BUILD_DEPENDS:=golang\/host upx\/host/g' ./package/mosdns/Makefile
