@@ -51,27 +51,36 @@ log:
   file: ''
 
 data_providers:
-  - tag: geosite
-    file: /tmp/geosite.dat
-    auto_reload: true
-  - tag: geoip
-    file: /tmp/geoip.dat
+  - tag: 'geosite'
+    file: /tmp/etc/openclash/GeoSite.dat
     auto_reload: true
 
+  - tag: 'modify_ttl'
+    type: ttl
+    args:
+      minimal_ttl: 300
+      maximum_ttl: 3600
+
 plugins:
-  - tag: 'forward_local'
+  - tag: 'forward_dns'
     type: fast_forward
     args:
       upstream:
         - addr: 223.5.5.5
         - addr: 119.29.29.29
+        - addr: tcp://223.5.5.5
+        - addr: tcp://119.29.29.29
 
-  - tag: 'forward_remote'
+  - tag: 'forward_doh'
     type: fast_forward
     args:
       upstream:
-        - addr: 8.8.8.8
-        - addr: 1.1.1.1
+        - addr: https://223.5.5.5/dns-query
+          enable_http3: true
+          trusted: true
+        - addr: https://223.6.6.6/dns-query
+          enable_http3: true
+          trusted: true
 
   - tag: query_is_local_domain
     type: query_matcher
@@ -84,17 +93,18 @@ plugins:
     args:
       domain:
         - 'provider:geosite:geolocation-!cn'
+
   - tag: query_is_ad_domain
     type: query_matcher
     args:
       domain:
         - 'provider:geosite:category-ads-all'
 
-  - tag: response_has_local_ip
-    type: response_matcher
+  - tag: query_is_vps_domain
+    type: query_matcher
     args:
-      ip:
-        - 'provider:geoip:cn'
+      domain:
+        - 'regexp:.+\.e?[udx]domain\.ml$'
 
   - tag: main_sequence
     type: sequence
@@ -102,30 +112,39 @@ plugins:
       exec:
         - _misc_optm
         - _default_cache
+
         - if: 'query_is_ad_domain'
           exec:
-            - _new_nxdomain_response
-            - _return
+              - _new_nxdomain_response
+              - _return
 
         - if: 'query_is_local_domain'
           exec:
-            - forward_local
+            - _prefer_ipv6
+            - forward_dns
             - _return
-
-        - if: 'query_is_non_local_domain'
+        
+        - if: 'query_is_non_local_domain || query_is_vps_domain'
           exec:
-            - forward_remote
+            - _prefer_ipv4
+            - forward_doh
             - _return
 
         - primary:
-            - forward_local
-            - if: '(! response_has_local_ip) && [_response_valid_answer]'
-              exec:
-                - _drop_response
+          - parallel:
+              - - _prefer_ipv6
+                - forward_dns
+              - - _prefer_ipv6
+                - forward_doh
           secondary:
-            - _prefer_ipv4
-            - forward_remote
-          fast_fallback: 200
+            - parallel:
+                - - _prefer_ipv4
+                  - forward_dns
+                - - _prefer_ipv4
+                  - forward_doh
+          fast_fallback: 100
+
+        - modify_ttl
 
 servers:
   - exec: main_sequence
