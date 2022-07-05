@@ -55,13 +55,13 @@ data_providers:
     file: /tmp/etc/openclash/GeoSite.dat
     auto_reload: true
 
+plugins:
   - tag: 'modify_ttl'
     type: ttl
     args:
       minimal_ttl: 300
       maximum_ttl: 3600
 
-plugins:
   - tag: 'forward_dns'
     type: fast_forward
     args:
