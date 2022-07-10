@@ -92,7 +92,7 @@ plugins:
         - addr: https://1.1.1.1/dns-query
           enable_http3: true
           trusted: true
-          
+
   - tag: query_is_local_domain
     type: query_matcher
     args:
@@ -148,9 +148,7 @@ plugins:
             - _return
 
         - primary:
-            - parallel:
-                - - forward_dns
-                - - forward_doh
+            - forward_doh
             - if: 'query_is_private'
               exec:
                 - _drop_response
