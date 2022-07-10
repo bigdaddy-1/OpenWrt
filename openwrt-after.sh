@@ -82,6 +82,17 @@ plugins:
           enable_http3: true
           trusted: true
 
+  - tag: 'forward_remote'
+    type: fast_forward
+    args:
+      upstream:
+        - addr: https://8.8.8.8/dns-query
+          enable_http3: true
+          trusted: true
+        - addr: https://1.1.1.1/dns-query
+          enable_http3: true
+          trusted: true
+          
   - tag: query_is_local_domain
     type: query_matcher
     args:
@@ -100,6 +111,12 @@ plugins:
       domain:
         - 'provider:geosite:category-ads-all'
 
+  - tag: query_is_private
+    type: query_matcher
+    args:
+      domain:
+        - 'provider:geosite:private'
+
   - tag: query_is_vps_domain
     type: query_matcher
     args:
@@ -115,33 +132,31 @@ plugins:
 
         - if: 'query_is_ad_domain'
           exec:
-              - _new_nxdomain_response
-              - _return
+            - _new_nxdomain_response
+            - _return
 
         - if: 'query_is_local_domain'
           exec:
             - _prefer_ipv6
             - forward_dns
             - _return
-        
+
         - if: 'query_is_non_local_domain || query_is_vps_domain'
           exec:
             - _prefer_ipv4
-            - forward_doh
+            - forward_remote
             - _return
 
         - primary:
-          - parallel:
-              - - _prefer_ipv6
-                - forward_dns
-              - - _prefer_ipv6
-                - forward_doh
-          secondary:
             - parallel:
-                - - _prefer_ipv4
-                  - forward_dns
-                - - _prefer_ipv4
-                  - forward_doh
+                - - forward_dns
+                - - forward_doh
+            - if: 'query_is_private'
+              exec:
+                - _drop_response
+          secondary:
+            - _prefer_ipv4
+            - forward_remote
           fast_fallback: 100
 
         - modify_ttl
