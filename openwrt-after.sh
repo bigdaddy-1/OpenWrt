@@ -86,10 +86,12 @@ plugins:
     type: fast_forward
     args:
       upstream:
-        - addr: https://8.8.8.8/dns-query
+        - addr: https://dns.google/dns-query
+          dial_addr: '8.8.8.8' 
           enable_http3: true
           trusted: true
-        - addr: https://1.1.1.1/dns-query
+        - addr: https://cloudflare-dns.com/dns-query
+          dial_addr: '1.1.1.1' 
           enable_http3: true
           trusted: true
 
