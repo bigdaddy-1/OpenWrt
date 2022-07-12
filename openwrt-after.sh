@@ -143,7 +143,13 @@ plugins:
             - forward_dns
             - _return
 
-        - if: 'query_is_non_local_domain || query_is_vps_domain'
+        - if: 'query_is_vps_domain'
+          exec:
+            - _prefer_ipv6
+            - forward_doh
+            - _return
+
+        - if: 'query_is_non_local_domain'
           exec:
             - _prefer_ipv4
             - forward_remote
