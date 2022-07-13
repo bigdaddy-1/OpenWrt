@@ -68,8 +68,7 @@ plugins:
       upstream:
         - addr: 223.5.5.5
         - addr: 119.29.29.29
-        - addr: tcp://223.5.5.5
-        - addr: tcp://119.29.29.29
+        - addr: 114.114.114.114
 
   - tag: 'forward_doh'
     type: fast_forward
@@ -87,45 +86,45 @@ plugins:
     args:
       upstream:
         - addr: https://dns.google/dns-query
-          dial_addr: '8.8.8.8' 
+          dial_addr: 8.8.8.8
           enable_http3: true
           trusted: true
         - addr: https://cloudflare-dns.com/dns-query
-          dial_addr: '1.1.1.1' 
+          dial_addr: 1.1.1.1
           enable_http3: true
           trusted: true
 
-  - tag: query_is_local_domain
+  - tag: 'query_is_local_domain'
     type: query_matcher
     args:
       domain:
-        - 'provider:geosite:cn'
+        - provider:geosite:cn
 
-  - tag: query_is_non_local_domain
+  - tag: 'query_is_non_local_domain'
     type: query_matcher
     args:
       domain:
-        - 'provider:geosite:geolocation-!cn'
+        - provider:geosite:geolocation-!cn
 
-  - tag: query_is_ad_domain
+  - tag: 'query_is_ad_domain'
     type: query_matcher
     args:
       domain:
-        - 'provider:geosite:category-ads-all'
+        - provider:geosite:category-ads-all
 
-  - tag: query_is_private
+  - tag: 'query_is_private'
     type: query_matcher
     args:
       domain:
-        - 'provider:geosite:private'
+        - provider:geosite:private
 
-  - tag: query_is_vps_domain
+  - tag: 'query_is_vps_domain'
     type: query_matcher
     args:
       domain:
-        - 'regexp:.+\.e?[udx]domain\.ml$'
+        - regexp:.+\.e?[udx]domain\.ml$
 
-  - tag: main_sequence
+  - tag: 'main_sequence'
     type: sequence
     args:
       exec:
@@ -145,9 +144,15 @@ plugins:
 
         - if: 'query_is_vps_domain'
           exec:
-            - _prefer_ipv6
-            - forward_doh
-            - _return
+            - primary:
+                - _prefer_ipv6
+                - forward_remote
+                - _return
+              secondary:
+                - _prefer_ipv6
+                - forward_dns
+                - _return
+              fast_fallback: 150
 
         - if: 'query_is_non_local_domain'
           exec:
@@ -163,12 +168,12 @@ plugins:
           secondary:
             - _prefer_ipv4
             - forward_remote
-          fast_fallback: 100
+          fast_fallback: 50
 
         - modify_ttl
 
 servers:
-  - exec: main_sequence
+  - exec: 'main_sequence'
     listeners:
       - protocol: udp
         addr: 127.0.0.1:5353
