@@ -36,6 +36,9 @@ sed -i 's/services/system/g' ./feeds/luci/applications/luci-app-ttyd/root/usr/sh
 # Modify default zerotier
 sed -i '24d' ./package/luci-app-zerotier/luasrc/model/cbi/zerotier/manual.lua
 
+# Modify default openclash
+sed -i "s/+unzip//g" ./package/luci-app-openclash/Makefile
+
 # Modify default mosdns
 mosdns_version=$(curl -fs --max-time 10 "https://api.github.com/repos/IrineSistiana/mosdns/releases/latest" | jq -r '.tag_name' | sed 's/v//')
 mosdns_hash=$(curl https://codeload.github.com/IrineSistiana/mosdns/tar.gz/v$mosdns_version | sha256sum | awk '{print $1}')
