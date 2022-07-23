@@ -20,12 +20,12 @@ on:
         default: 'false'
 
 env:
-  REPO_URL: https://github.com/robimarko/openwrt.git
-  REPO_BRANCH: ipq807x-5.15-pr
+  REPO_URL: https://github.com/openwrt/openwrt.git
+  REPO_BRANCH: master
   FEEDS_CONF: feeds.conf.default
-  CONFIG_FILE: .openwrt
-  DIY_P1_SH: openwrt-before.sh
-  DIY_P2_SH: openwrt-after.sh
+  CONFIG_FILE: .x86
+  DIY_P1_SH: x86-before.sh
+  DIY_P2_SH: x86-after.sh
   UPLOAD_BIN_DIR: false
   UPLOAD_FIRMWARE: true
   UPLOAD_COWTRANSFER: false
