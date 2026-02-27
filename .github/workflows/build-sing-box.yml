@@ -1,0 +1,125 @@
+name: Build SING-BOX
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 0 * * *"
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  set-variables:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set variables
+        id: vars
+        run: |
+          echo "RELEASE_NAME=Released on $(TZ='UTC-8' date +%Y%m%d%H%M)" >> $GITHUB_OUTPUT
+          echo "TAG_NAME=$(TZ='UTC-8' date +%Y%m%d%H%M)" >> $GITHUB_OUTPUT
+    outputs:
+      RELEASE_NAME: ${{ steps.vars.outputs.RELEASE_NAME }}
+      TAG_NAME: ${{ steps.vars.outputs.TAG_NAME }}
+
+  autodelete:
+    env:
+      PYPATH: delete-old.py
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: sudo -E apt-get -qq install python3-requests
+      - name: Delete old tags and releases
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          curl -fsL -o $PYPATH https://raw.githubusercontent.com/bigdaddy-1/OpenWrt/master/delete-old.py
+          python $PYPATH
+
+  cross:
+    needs: set-variables
+    strategy:
+      matrix:
+        include:
+          # windows
+          - name: windows-amd64
+            goos: windows
+            goarch: amd64
+            goamd64: v1
+          - name: windows-amd64-v3
+            goos: windows
+            goarch: amd64
+            goamd64: v3
+          - name: windows-386
+            goos: windows
+            goarch: 386
+          - name: windows-arm64
+            goos: windows
+            goarch: arm64
+          # linux
+          - name: linux-amd64
+            goos: linux
+            goarch: amd64
+            goamd64: v1
+          - name: linux-amd64-v3
+            goos: linux
+            goarch: amd64
+            goamd64: v3
+          - name: linux-386
+            goos: linux
+            goarch: 386
+          - name: linux-arm64
+            goos: linux
+            goarch: arm64
+      fail-fast: false
+    runs-on: ubuntu-latest
+    env:
+      GOOS: ${{ matrix.goos }}
+      GOARCH: ${{ matrix.goarch }}
+      GOAMD64: ${{ matrix.goamd64 }}
+      GOARM: ${{ matrix.goarm }}
+      GOMIPS: ${{ matrix.gomips }}
+      CGO_ENABLED: 0
+      TAGS: with_clash_api,with_gvisor,with_quic,with_utls,with_wireguard
+    steps:
+      - name: Checkout
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+        with:
+          fetch-depth: 0
+          repository: SagerNet/sing-box
+      - name: Fetch Latest Branch
+        run: |
+          git checkout dev-next
+          git pull origin dev-next
+      - name: Get latest version
+        id: version
+        run: |
+          echo go_version=$(curl -s https://raw.githubusercontent.com/actions/go-versions/main/versions-manifest.json | grep -oE '"version": "[0-9]{1}.[0-9]{1,}(.[0-9]{1,})?"' | head -1 | cut -d':' -f2 | sed 's/ //g; s/"//g') >> $GITHUB_OUTPUT
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: ${{ steps.version.outputs.go_version }}
+      - name: Build
+        id: build
+        run: make
+      - name: unzip application
+        if: ${{ contains(matrix.name, 'windows') }}
+        run: mv sing-box* sing-box-${{ matrix.name }}.exe
+      - name: untar application
+        if: ${{ contains(matrix.name, 'linux') || contains(matrix.name, 'bsd') || contains(matrix.name, 'darwin') || contains(matrix.name, 'android') }}
+        run: mv sing-box* sing-box-${{ matrix.name }}
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ needs.set-variables.outputs.TAG_NAME }}
+          name: ${{ needs.set-variables.outputs.RELEASE_NAME }}
+          files: |
+            sing-box*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

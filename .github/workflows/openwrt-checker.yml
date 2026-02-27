@@ -1,0 +1,92 @@
+name: Openwrt-Checker
+
+env:
+  REPO_URL: https://github.com/openwrt/openwrt.git
+  REPO_BRANCH: main
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 */8 * * *'
+
+jobs:
+  check-hash:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Target Repository
+        uses: actions/checkout@v4
+        with:
+          repository: openwrt/openwrt
+          ref: ${{ env.REPO_BRANCH }}
+          fetch-depth: 1
+
+      - name: Get Current Commit Hash
+        id: getCurrentHash
+        run: |
+          CURRENT_HASH=$(git rev-parse HEAD)
+          echo "Current Hash: $CURRENT_HASH"
+          echo "currentHash=$CURRENT_HASH" >> $GITHUB_OUTPUT
+          echo "$CURRENT_HASH" > current_hash.txt
+
+      - name: Get Previous Commit Hash
+        id: getPrevHash
+        run: |
+          HEADERS=(-H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+                  -H "Accept: application/vnd.github+json")
+
+          RUNS_API="https://api.github.com/repos/${{ github.repository }}/actions/workflows/openwrt-checker.yml/runs?status=success&branch=${{ github.ref_name }}"
+          PREV_RUN_ID=$(curl -s "${HEADERS[@]}" "$RUNS_API" | jq -r '.workflow_runs[0].id')
+
+          if [ -z "$PREV_RUN_ID" ]; then
+            echo "Error: No previous successful run found"
+            echo "prevHash=none" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+          echo "Previous Run ID: $PREV_RUN_ID"
+
+          ARTIFACT_API="https://api.github.com/repos/${{ github.repository }}/actions/runs/$PREV_RUN_ID/artifacts"
+          ARTIFACT_URL=$(curl -s "${HEADERS[@]}" "$ARTIFACT_API" | jq -r '.artifacts[] | select(.name == "commit-hash") | .archive_download_url')
+
+          if [ -n "$ARTIFACT_URL" ]; then
+            curl -s -L "${HEADERS[@]}" "$ARTIFACT_URL" -o artifact.zip
+            PREV_HASH=$(unzip -p artifact.zip current_hash.txt)
+            echo "Previous Hash: $PREV_HASH"
+            echo "prevHash=$PREV_HASH" >> $GITHUB_OUTPUT
+          else
+            echo "No artifact found for run $PREV_RUN_ID"
+            echo "prevHash=none" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Compare Hashes
+        run: |
+          echo "Comparing: Current Hash=${{ steps.getCurrentHash.outputs.currentHash }} <--> Previous Hash=${{ steps.getPrevHash.outputs.prevHash }}"
+          if [ "${{ steps.getPrevHash.outputs.prevHash }}" != "${{ steps.getCurrentHash.outputs.currentHash }}" ]; then
+            echo "Hash changed, will trigger workflow"
+          else
+            echo "No hash change detected"
+          fi
+
+      - name: Trigger Workflow if Hash Changed
+        id: trigger_workflow
+        if: steps.getPrevHash.outputs.prevHash != steps.getCurrentHash.outputs.currentHash
+        uses: peter-evans/repository-dispatch@v1
+        with:
+          token: ${{ secrets.ACTIONS_TRIGGER_PAT }}
+          event-type: Source Code Update
+
+      - name: Upload Current Hash as Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: commit-hash
+          path: current_hash.txt
+          retention-days: 7
+
+      - name: Delete workflow runs
+        if: steps.trigger_workflow.conclusion == 'success'
+        uses: GitRML/delete-workflow-runs@main
+        with:
+          retain_days: 1
+          keep_minimum_runs: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
