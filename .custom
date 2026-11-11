@@ -8,12 +8,10 @@ CONFIG_TARGET_qualcommax=y
 CONFIG_TARGET_qualcommax_ipq807x=y
 CONFIG_TARGET_qualcommax_ipq807x_DEVICE_xiaomi_ax3600=y
 
-# The QCA9887 IoT radio stays available as a module, not in the image.
-CONFIG_ATH10K-CT_LEDS=n
-CONFIG_PACKAGE_ath10k-board-qca9887=n
-CONFIG_PACKAGE_ath10k-firmware-qca9887=n
-CONFIG_PACKAGE_ath10k-firmware-qca9887-ct=n
-CONFIG_PACKAGE_kmod-ath10k-ct-smallbuffers=m
+# QCA9887 IoT radio: driver and firmware in the image, or the antenna stays dark.
+CONFIG_PACKAGE_kmod-ath10k-ct-smallbuffers=y
+CONFIG_PACKAGE_ath10k-board-qca9887=y
+CONFIG_PACKAGE_ath10k-firmware-qca9887-ct=y
 CONFIG_PACKAGE_kmod-phy-aquantia=m
 
 # Wired offload is the PPE. Wi-Fi offload is the NSS firmware plus nss-wifi-drv.
