@@ -21,8 +21,8 @@ on:
         default: 'false'
 
 env:
-  REPO_URL: https://github.com/qosmio/openwrt-ipq.git
-  REPO_BRANCH: main-nss
+  REPO_URL: https://github.com/JuliusBairaktaris/openwrt-ppe-nss.git
+  REPO_BRANCH: ppe-nss
   FEEDS_CONF: feeds.conf.default
   CONFIG_FILE: .custom
   DIY_P1_SH: openwrt-before.sh
@@ -65,6 +65,9 @@ jobs:
     - name: Load custom feeds
       run: |
         [ -e $FEEDS_CONF ] && mv $FEEDS_CONF openwrt/feeds.conf.default
+        # ppe-nss needs its NSS firmware feed and the luci fork with PPE QoS.
+        sed -i 's|^src-git luci .*|src-git luci https://github.com/JuliusBairaktaris/luci.git;luci-app-ppe-qos|' openwrt/feeds.conf.default
+        grep -q '^src-git nss ' openwrt/feeds.conf.default || echo 'src-git nss https://github.com/JuliusBairaktaris/nss-packages.git;ppe-nss' >> openwrt/feeds.conf.default
         chmod +x $DIY_P1_SH
         cd openwrt
         $GITHUB_WORKSPACE/$DIY_P1_SH
