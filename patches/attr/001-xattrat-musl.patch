@@ -1,20 +1,51 @@
 --- a/libmisc/xattrat.c
 +++ b/libmisc/xattrat.c
-@@ -31,7 +31,7 @@
+@@ -18,7 +18,7 @@
+ */
+ 
+ #include "config.h"
+-#include <linux/xattr.h>
++#include <stdint.h>
+ #include <sys/syscall.h>
+ #include <unistd.h>
+ #include <errno.h>
+@@ -27,13 +27,26 @@
+ 
+ #pragma GCC diagnostic ignored "-Wunused-parameter"
+ 
++/*
++ * struct xattr_args was added to <linux/xattr.h> in Linux 6.13, but the
++ * syscall numbers can be defined independently of the kernel headers (musl
++ * libc defines them in <bits/syscall.h>, for example), so we cannot rely on
++ * the kernel headers to define the struct.  Use our own definition of this
++ * fixed part of the kernel ABI instead.
++ */
++struct attr_xattr_args {
++	uint64_t value __attribute__((aligned(8)));
++	uint32_t size;
++	uint32_t flags;
++};
++
+ ssize_t
  getxattrat(int dirfd, const char *path, int at_flags, const char *name,
  	   void *value, size_t size)
  {
--#ifdef __NR_getxattrat
-+#if defined(__NR_getxattrat) && defined(__GLIBC__)
- 	struct xattr_args uargs = {
- 		.value = (unsigned long)value,
+ #ifdef __NR_getxattrat
+-	struct xattr_args uargs = {
+-		.value = (unsigned long)value,
++	struct attr_xattr_args uargs = {
++		.value = (uintptr_t)value,
  		.size = size,
-@@ -49,7 +49,7 @@
- setxattrat(int dirfd, const char *path, int at_flags, const char *name,
+ 	};
+ 
+@@ -50,8 +63,8 @@
  	   const void *value, size_t size, int flags)
  {
--#ifdef __NR_setxattrat
-+#if defined(__NR_setxattrat) && defined(__GLIBC__)
- 	struct xattr_args uargs = {
- 		.value = (unsigned long)value,
+ #ifdef __NR_setxattrat
+-	struct xattr_args uargs = {
+-		.value = (unsigned long)value,
++	struct attr_xattr_args uargs = {
++		.value = (uintptr_t)value,
  		.size = size,
+ 		.flags = flags,
+ 	};
