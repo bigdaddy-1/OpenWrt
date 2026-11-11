@@ -27,9 +27,10 @@ sed -i "s/'\${country || ''}'/'US'/g" ./package/network/config/wifi-scripts/file
 # Modify default luci-theme-argon
 curl -fsL https://raw.githubusercontent.com/bigdaddy-1/OpenWrt/master/bg1.jpg -o ./package/luci-theme-argon/htdocs/luci-static/argon/img/bg1.jpg
 
-# attr 2.6.0 uses struct xattr_args, which musl's linux/xattr.h does not have.
-mkdir -p ./feeds/packages/utils/attr/patches
+# attr 2.6.0 and acl 2.4.0 use struct xattr_args, which musl's linux/xattr.h does not have.
+mkdir -p ./feeds/packages/utils/attr/patches ./feeds/packages/utils/acl/patches
 cp "$GITHUB_WORKSPACE/patches/attr/001-xattrat-musl.patch" ./feeds/packages/utils/attr/patches/
+cp "$GITHUB_WORKSPACE/patches/acl/001-xattrat-musl.patch" ./feeds/packages/utils/acl/patches/
 
 # Modify default mdns
 mv ./mdns ./feeds/packages/net/mdns-repeater/files/mdns_repeater.conf

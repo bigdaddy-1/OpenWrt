@@ -1,0 +1,63 @@
+--- a/libmisc/xattrat.c
++++ b/libmisc/xattrat.c
+@@ -15,30 +15,40 @@
+ 
+   You should have received a copy of the GNU Lesser General Public
+   License along with this library; if not, see <https://www.gnu.org/licenses/>.
+ */
+ 
+ #include "config.h"
+-#include <linux/xattr.h>
++#include <stdint.h>
+ #include <sys/syscall.h>
+ #include <unistd.h>
+ #include <errno.h>
+ 
+ #include "xattrat.h"
+ 
+ #pragma GCC diagnostic ignored "-Wunused-parameter"
+ 
+ #include "xattrat.h"
+ 
++/*
++ * struct xattr_args was added to <linux/xattr.h> in Linux 6.13, but musl
++ * defines the syscall numbers without that struct. Define the kernel ABI locally.
++ */
++struct attr_xattr_args {
++	uint64_t value __attribute__((aligned(8)));
++	uint32_t size;
++	uint32_t flags;
++};
++
+ ssize_t
+ getxattrat(int dirfd, const char *path, int at_flags, const char *name,
+ 	   void *value, size_t size)
+ {
+ #ifdef __NR_getxattrat
+-	struct xattr_args uargs = {
+-		.value = (unsigned long)value,
++	struct attr_xattr_args uargs = {
++		.value = (uintptr_t)value,
+ 		.size = size,
+ 	};
+ 
+ 	return syscall(__NR_getxattrat, dirfd, path, at_flags, name,
+ 		       &uargs, sizeof(uargs));
+ #else
+@@ -49,14 +59,14 @@
+ 
+ int
+ setxattrat(int dirfd, const char *path, int at_flags, const char *name,
+ 	   const void *value, size_t size, int flags)
+ {
+ #ifdef __NR_setxattrat
+-	struct xattr_args uargs = {
+-		.value = (unsigned long)value,
++	struct attr_xattr_args uargs = {
++		.value = (uintptr_t)value,
+ 		.size = size,
+ 		.flags = flags,
+ 	};
+ 
+         return syscall(__NR_setxattrat, dirfd, path, at_flags, name,
+                        &uargs, sizeof(uargs));
