@@ -1,0 +1,20 @@
+--- a/libmisc/xattrat.c
++++ b/libmisc/xattrat.c
+@@ -31,7 +31,7 @@
+ getxattrat(int dirfd, const char *path, int at_flags, const char *name,
+ 	   void *value, size_t size)
+ {
+-#ifdef __NR_getxattrat
++#if defined(__NR_getxattrat) && defined(__GLIBC__)
+ 	struct xattr_args uargs = {
+ 		.value = (unsigned long)value,
+ 		.size = size,
+@@ -49,7 +49,7 @@
+ setxattrat(int dirfd, const char *path, int at_flags, const char *name,
+ 	   const void *value, size_t size, int flags)
+ {
+-#ifdef __NR_setxattrat
++#if defined(__NR_setxattrat) && defined(__GLIBC__)
+ 	struct xattr_args uargs = {
+ 		.value = (unsigned long)value,
+ 		.size = size,
