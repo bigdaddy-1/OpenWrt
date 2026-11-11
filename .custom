@@ -175,11 +175,21 @@ CONFIG_PACKAGE_kmod-ath10k-ct-smallbuffers=m
 ## Hardware this board does not have.
 CONFIG_PACKAGE_kmod-phy-aquantia=m
 
+# PF_RING 9.2.0 does not build on kernel 6.18 (bind() signature).
+# CONFIG_ALL_KMODS selects it; the image does not use it.
+# CONFIG_PACKAGE_kmod-pf-ring is not set
+# CONFIG_PACKAGE_libpfring is not set
+
 # --- added from the old .custom image ---
 CONFIG_PACKAGE_irqbalance=y
 CONFIG_PACKAGE_zerotier=y
 CONFIG_PACKAGE_luci-app-zerotier=y
 CONFIG_PACKAGE_sing-box=y
+CONFIG_SINGBOX_WITH_CLASH_API=y
+CONFIG_SINGBOX_WITH_GVISOR=y
+CONFIG_SINGBOX_WITH_QUIC=y
+CONFIG_SINGBOX_WITH_UTLS=y
+CONFIG_SINGBOX_WITH_WIREGUARD=y
 CONFIG_PACKAGE_ttyd=y
 CONFIG_PACKAGE_luci-app-ttyd=y
 CONFIG_PACKAGE_mdns-repeater=y
