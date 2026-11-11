@@ -83,17 +83,41 @@ if [[ -z "$singbox_version" ]]; then
   apk_version=$singbox_latest_normalized
 fi
 singbox_hash=$(curl -fsL https://codeload.github.com/SagerNet/sing-box/tar.gz/v$singbox_version | sha256sum | awk '{print $1}')
-sed -i "s/PKG_VERSION:=.*/PKG_REAL_VERSION:=$singbox_version\nPKG_VERSION:=$apk_version/g" ./package/sing-box/Makefile
-sed -i "s/PKG_HASH:=.*/PKG_HASH:=$singbox_hash\nPKG_BUILD_DIR:=\$(BUILD_DIR)\/sing-box-\$(PKG_REAL_VERSION)/g" ./package/sing-box/Makefile
-sed -i 's/$(PKG_VERSION)/$(PKG_REAL_VERSION)/g' ./package/sing-box/Makefile
-sed -i '/^define Package\/sing-box\/conffiles/,/^endef/d' ./package/sing-box/Makefile
-sed -i '/^define Package\/sing-box\/install/,/^endef/d' ./package/sing-box/Makefile
-sed -i '44 i define Package/sing-box/install\n\t$(call GoPackage/Package/Install/Bin,$(1))\n\t$(INSTALL_DIR) $(1)/etc/init.d\n\t$(INSTALL_BIN) $(PKG_BUILD_DIR)/scripts/openwrt/sing-box-init-openwrt $(1)/etc/init.d/sing-box\n\t$(INSTALL_DIR) $(1)/etc/sing-box\n\tcp -r ./metacubexd-gh-pages $(1)/etc/sing-box/ui\nendef' ./package/sing-box/Makefile
-# sed -i 's/PKG_BUILD_DEPENDS:=golang\/host/PKG_BUILD_DEPENDS:=golang\/host upx\/host/g' ./package/sing-box/Makefile
-sed -i '38 i GO_PKG_LDFLAGS:=-s -w' ./package/sing-box/Makefile
-# sed -i '43 i define Build/Compile\n\t$(call GoPackage/Build/Compile)\n\t$(STAGING_DIR_HOST)/bin/upx --lzma --best $(GO_PKG_BUILD_BIN_DIR)/sing-box\nendef' ./package/sing-box/Makefile
-sed -i 's/\.\.\/\.\./$(TOPDIR)\/feeds\/packages/g' ./package/sing-box/Makefile
-sed -i 's/$(PKG_BUILD_DIR)\/scripts\/openwrt\/sing-box-init-openwrt/$(TOPDIR)\/sing-box/g' ./package/sing-box/Makefile
+python3 - "$singbox_version" "$apk_version" "$singbox_hash" <<'PY'
+import pathlib, sys
+version, apk, digest = sys.argv[1:]
+path = pathlib.Path("./package/sing-box/Makefile")
+text = path.read_text()
+old_version = next(line.split(":=", 1)[1] for line in text.splitlines() if line.startswith("PKG_VERSION:="))
+old_hash = next(line for line in text.splitlines() if line.startswith("PKG_HASH:="))
+text = text.replace("PKG_VERSION:=" + old_version, "PKG_REAL_VERSION:=" + version + "\nPKG_VERSION:=" + apk, 1)
+text = text.replace(old_hash, "PKG_HASH:=" + digest + "\nPKG_BUILD_DIR:=$(BUILD_DIR)/sing-box-$(PKG_REAL_VERSION)", 1)
+text = text.replace("$(PKG_VERSION)", "$(PKG_REAL_VERSION)")
+text = text.replace("../../lang/golang/golang-package.mk", "$(TOPDIR)/feeds/packages/lang/golang/golang-package.mk")
+if "GO_PKG_LDFLAGS:=-s -w" not in text:
+    text = text.replace("GO_PKG_LDFLAGS_X:=", "GO_PKG_LDFLAGS:=-s -w\nGO_PKG_LDFLAGS_X:=", 1)
+old = """define Package/sing-box/install
+\t$(call GoPackage/Package/Install/Bin,$(1))
+
+\t$(INSTALL_DIR) $(1)/etc/sing-box
+\t$(INSTALL_DATA) $(PKG_BUILD_DIR)/release/config/config.json $(1)/etc/sing-box
+
+\t$(INSTALL_DIR) $(1)/etc/config/
+\t$(INSTALL_CONF) ./files/sing-box.conf $(1)/etc/config/sing-box
+\t$(INSTALL_DIR) $(1)/etc/init.d/
+\t$(INSTALL_BIN) ./files/sing-box.init $(1)/etc/init.d/sing-box
+endef"""
+new = """define Package/sing-box/install
+\t$(call GoPackage/Package/Install/Bin,$(1))
+\t$(INSTALL_DIR) $(1)/etc/init.d
+\t$(INSTALL_BIN) $(TOPDIR)/sing-box $(1)/etc/init.d/sing-box
+\t$(INSTALL_DIR) $(1)/etc/sing-box
+\tcp -r ./metacubexd-gh-pages $(1)/etc/sing-box/ui
+endef"""
+if old not in text:
+    raise SystemExit("sing-box install block not found")
+path.write_text(text.replace(old, new, 1))
+PY
 sed -i "s/SURL/$SURL/g" ./sing-box
 
 # Modify default mosdns
@@ -119,13 +143,24 @@ if [[ -z "$mosdns_version" ]]; then
   mosdns_version=$mosdns_latest
 fi
 mosdns_hash=$(curl -fsL https://codeload.github.com/IrineSistiana/mosdns/tar.gz/v$mosdns_version | sha256sum | awk '{print $1}')
-sed -i "s/PKG_VERSION:=.*/PKG_VERSION:=$mosdns_version/g" ./package/mosdns/Makefile
-sed -i "s/PKG_HASH:=.*/PKG_HASH:=$mosdns_hash/g" ./package/mosdns/Makefile
-# sed -i 's/PKG_BUILD_DEPENDS:=golang\/host/PKG_BUILD_DEPENDS:=golang\/host upx\/host/g' ./package/mosdns/Makefile
-sed -i '24 i GO_PKG_LDFLAGS:=-s -w' ./package/mosdns/Makefile
-# sed -i '29 i define Build/Compile\n\t$(call GoPackage/Build/Compile)\n\t$(STAGING_DIR_HOST)/bin/upx --lzma --best $(GO_PKG_BUILD_BIN_DIR)/mosdns\nendef' ./package/mosdns/Makefile
-sed -i 's/\.\.\/\.\./$(TOPDIR)\/feeds\/packages/g' ./package/mosdns/Makefile
-sed -i 's/$(PKG_BUILD_DIR)\/scripts\/openwrt\/mosdns-init-openwrt/$(TOPDIR)\/mosdns/g' ./package/mosdns/Makefile
+python3 - "$mosdns_version" "$mosdns_hash" <<'PY'
+import pathlib, sys
+version, digest = sys.argv[1:]
+path = pathlib.Path("./package/mosdns/Makefile")
+text = path.read_text()
+old_version = next(line.split(":=", 1)[1] for line in text.splitlines() if line.startswith("PKG_VERSION:="))
+old_hash = next(line for line in text.splitlines() if line.startswith("PKG_HASH:="))
+text = text.replace("PKG_VERSION:=" + old_version, "PKG_VERSION:=" + version, 1)
+text = text.replace(old_hash, "PKG_HASH:=" + digest, 1)
+text = text.replace("../../lang/golang/golang-package.mk", "$(TOPDIR)/feeds/packages/lang/golang/golang-package.mk")
+if "GO_PKG_LDFLAGS:=-s -w" not in text:
+    text = text.replace("GO_PKG:=", "GO_PKG_LDFLAGS:=-s -w\nGO_PKG:=", 1)
+old = "$(INSTALL_BIN) $(PKG_BUILD_DIR)/scripts/openwrt/mosdns-init-openwrt $(1)/etc/init.d/mosdns"
+new = "$(INSTALL_BIN) $(TOPDIR)/mosdns $(1)/etc/init.d/mosdns"
+if old not in text:
+    raise SystemExit("mosdns init install line not found")
+path.write_text(text.replace(old, new, 1))
+PY
 sed -i "s/SURL2/$SURL2/g" ./mosdns
 cat >./package/mosdns/files/config.yaml <<\EOF
 log:
