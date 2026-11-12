@@ -366,7 +366,7 @@ chown network:nogroup "$APPBINARY" 2>/dev/null
 
 check_connectivity() {
     local target_ip=10.1.1.10
-    local max_attempts=15
+    local max_attempts=3
     local attempt=1
 
     echo "Testing network connectivity to Zerotier.."
