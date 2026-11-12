@@ -386,14 +386,15 @@ check_connectivity() {
 check_files() {
     local rules="https://raw.githubusercontent.com/Loyalsoldier/v2ray-rules-dat/release/"
     local geoip="https://raw.githubusercontent.com/Loyalsoldier/geoip/release/text/"
-    local item name base path tmp fetch attempt=1 ok
+    local attempt=1
 
     download() {
-        name="$1"
-        base="$2"
-        path="/tmp/$name"
-        tmp="$path.download.$attempt"
-        fetch="SURL2/convert/_start_/${base}${name}/_end_/${name}?type=plain-text&target=plain-text&del=true"
+        local name="$1"
+        local base="$2"
+        local path="/tmp/$name"
+        local tmp="$path.download.$attempt"
+        local fetch="SURL2/convert/_start_/${base}${name}/_end_/${name}?type=plain-text&target=plain-text&del=true"
+
         if wget -q --timeout=30 --tries=1 -O "$tmp" "$fetch" && [ -s "$tmp" ]; then
             mv "$tmp" "$path"
             chmod 644 "$path"
@@ -410,17 +411,12 @@ check_files() {
 
     umask 022
     while [ "$attempt" -le 3 ]; do
-        ok=0
-        for item in \
-            "direct-list.txt $rules" \
-            "apple-cn.txt $rules" \
-            "cn.txt $geoip" \
-            "private.txt $geoip"
-        do
-            set -- $item
-            download "$1" "$2" || ok=1
-        done
-        if [ "$ok" -eq 0 ]; then
+        local failed=0
+        download direct-list.txt "$rules" || failed=1
+        download apple-cn.txt "$rules" || failed=1
+        download cn.txt "$geoip" || failed=1
+        download private.txt "$geoip" || failed=1
+        if [ "$failed" -eq 0 ]; then
             echo "File download operation completed."
             return 0
         fi
