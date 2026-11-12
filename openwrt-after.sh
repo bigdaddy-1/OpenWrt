@@ -94,8 +94,12 @@ text = text.replace("PKG_VERSION:=" + old_version, "PKG_REAL_VERSION:=" + versio
 text = text.replace(old_hash, "PKG_HASH:=" + digest + "\nPKG_BUILD_DIR:=$(BUILD_DIR)/sing-box-$(PKG_REAL_VERSION)", 1)
 text = text.replace("$(PKG_VERSION)", "$(PKG_REAL_VERSION)")
 text = text.replace("../../lang/golang/golang-package.mk", "$(TOPDIR)/feeds/packages/lang/golang/golang-package.mk")
-if "GO_PKG_LDFLAGS:=-s -w" not in text:
+# Keep an existing assignment (sing-box needs -checklinkname=0). A second
+# GO_PKG_LDFLAGS:= would win and drop it, and the link then fails.
+if "GO_PKG_LDFLAGS:=" not in text:
     text = text.replace("GO_PKG_LDFLAGS_X:=", "GO_PKG_LDFLAGS:=-s -w\nGO_PKG_LDFLAGS_X:=", 1)
+elif "-s -w" not in text.split("GO_PKG_LDFLAGS_X:=", 1)[0]:
+    text = text.replace("GO_PKG_LDFLAGS:=", "GO_PKG_LDFLAGS:=-s -w ", 1)
 old = """define Package/sing-box/install
 \t$(call GoPackage/Package/Install/Bin,$(1))
 
