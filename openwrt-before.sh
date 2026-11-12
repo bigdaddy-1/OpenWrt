@@ -411,11 +411,13 @@ check_files() {
 
     umask 022
     while [ "$attempt" -le 3 ]; do
-        local failed=0
-        download direct-list.txt "$rules" || failed=1
-        download apple-cn.txt "$rules" || failed=1
-        download cn.txt "$geoip" || failed=1
-        download private.txt "$geoip" || failed=1
+        local failed=0 name
+        for name in direct-list.txt apple-cn.txt; do
+            download "$name" "$rules" || failed=1
+        done
+        for name in cn.txt private.txt; do
+            download "$name" "$geoip" || failed=1
+        done
         if [ "$failed" -eq 0 ]; then
             echo "File download operation completed."
             return 0
