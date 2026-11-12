@@ -24,8 +24,13 @@ sed -i "s/'\${defaults ? 0 : 1}'/'0'/g" ./package/network/config/wifi-scripts/fi
 sed -i '/else if (width > 80)/, /width = 80/c \		else if ((band.he || band.eht) && width >= 160) width = 160;\n		else if (width > 80) width = 80;' ./package/network/config/wifi-scripts/files/lib/wifi/mac80211.uc
 sed -i "s/'\${country || ''}'/'US'/g" ./package/network/config/wifi-scripts/files/lib/wifi/mac80211.uc
 
-# Modify default luci-theme-argon
-curl -fsL https://raw.githubusercontent.com/bigdaddy-1/OpenWrt/master/bg1.jpg -o ./package/luci-theme-argon/htdocs/luci-static/argon/img/bg1.jpg
+# Argon 3 picks the login background from this directory. img/bg1.jpg is no longer used.
+mkdir -p ./package/luci-theme-argon/htdocs/luci-static/argon/background
+curl -fsL https://raw.githubusercontent.com/bigdaddy-1/OpenWrt/master/bg1.webp -o ./package/luci-theme-argon/htdocs/luci-static/argon/background/bg1.webp
+rm -f ./package/luci-theme-argon/htdocs/luci-static/argon/img/bg1.webp
+# The theme ships its own settings page. Nothing here needs it.
+rm -rf ./package/luci-theme-argon/root/usr/share/luci/menu.d/luci-app-argon-config.json \
+	./package/luci-theme-argon/htdocs/luci-static/resources/view/argon-config.js
 
 # attr 2.6.0 and acl 2.4.0 use struct xattr_args, which musl's linux/xattr.h does not have.
 mkdir -p ./feeds/packages/utils/attr/patches ./feeds/packages/utils/acl/patches
