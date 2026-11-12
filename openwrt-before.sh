@@ -17,6 +17,10 @@
 #echo 'src-git helloworld https://github.com/fw876/helloworld' >>feeds.conf.default
 #echo 'src-git passwall https://github.com/xiaorouji/openwrt-passwall' >>feeds.conf.default
 
+# libcronet (sing-box Naive) is only packaged in immortalwrt. Keep luci, routing,
+# telephony, and the NSS feeds from the tree.
+sed -i 's|^src-git packages .*|src-git packages https://github.com/immortalwrt/packages.git;master|' feeds.conf.default
+
 # 自定义插件
 # Modify default frpc-upx
 git clone https://github.com/kuoruan/openwrt-upx.git ./package/openwrt-upx
