@@ -364,14 +364,14 @@ capabilities='cap_net_bind_service,cap_net_admin'
 
 chown network:nogroup "$APPBINARY" 2>/dev/null
 
-check_connectivity(){
+check_connectivity() {
     local target_ip=10.1.1.10
-    local max_attempts=3
+    local max_attempts=15
     local attempt=1
 
     echo "Testing network connectivity to Zerotier.."
 
-    while ! ping -c 1 -W 1 "${target_ip}" > /dev/null 2>&1; do
+    while ! ping -c 1 -W 1 "$target_ip" >/dev/null 2>&1; do
         if [ "$attempt" -ge "$max_attempts" ]; then
             echo "ERROR: Failed to connect to Zerotier after ${max_attempts} attempts. Skipping start.."
             return 1
@@ -384,49 +384,52 @@ check_connectivity(){
 }
 
 check_files() {
-   local files="direct-list.txt apple-cn.txt"
-   local files_url="https://raw.githubusercontent.com/Loyalsoldier/v2ray-rules-dat/release/"
-   local ip_cidr="cn.txt private.txt"
-   local ip_url="https://raw.githubusercontent.com/Loyalsoldier/geoip/release/text/"
+    local rules="https://raw.githubusercontent.com/Loyalsoldier/v2ray-rules-dat/release/"
+    local geoip="https://raw.githubusercontent.com/Loyalsoldier/geoip/release/text/"
+    local item name base path tmp fetch attempt=1 ok
 
-    download_file() {
-        local file="$1"
-        local url="$2"
-        local path="/tmp/$file"
-
-        if [ ! -f "$path" ] || [ "$(wget -qO- --timeout=5 "SURL2/convert/_start_/$url$file/_end_/$file?type=plain-text&target=plain-text&del=true" | md5sum)" != "$(cat "$path" | md5sum)" ]; then
-            wget -q --timeout=5 -O "$path" "SURL2/convert/_start_/$url$file/_end_/$file?type=plain-text&target=plain-text&del=true"
-            return $?
-        else
+    download() {
+        name="$1"
+        base="$2"
+        path="/tmp/$name"
+        tmp="$path.download.$attempt"
+        fetch="SURL2/convert/_start_/${base}${name}/_end_/${name}?type=plain-text&target=plain-text&del=true"
+        if wget -q --timeout=30 --tries=1 -O "$tmp" "$fetch" && [ -s "$tmp" ]; then
+            mv "$tmp" "$path"
+            chmod 644 "$path"
             return 0
         fi
+        rm -f "$tmp"
+        if [ -s "$path" ]; then
+            echo "Download failed for $name, keeping existing file."
+            return 0
+        fi
+        echo "Failed to download $name"
+        return 1
     }
 
-    for i in $(seq 1 3); do
-        status="success"
-        for file in $files; do
-            download_file "$file" "$files_url"
-            if [ $? -ne 0 ]; then
-                status="failed"
-                echo "Failed to download $file"
-            fi
+    umask 022
+    while [ "$attempt" -le 3 ]; do
+        ok=0
+        for item in \
+            "direct-list.txt $rules" \
+            "apple-cn.txt $rules" \
+            "cn.txt $geoip" \
+            "private.txt $geoip"
+        do
+            set -- $item
+            download "$1" "$2" || ok=1
         done
-        for ip in $ip_cidr; do
-            download_file "$ip" "$ip_url"
-            if [ $? -ne 0 ]; then
-                status="failed"
-                echo "Failed to download $ip"
-            fi
-        done
-
-        if [ "$status" == "success" ]; then
+        if [ "$ok" -eq 0 ]; then
             echo "File download operation completed."
-            break
-        else
-            echo "Download attempt $i failed. Retrying in 3 seconds..."
-            sleep 3
+            return 0
         fi
+        echo "Download attempt $attempt failed. Retrying in 3 seconds..."
+        attempt=$((attempt + 1))
+        sleep 3
     done
+    echo "ERROR: required mosdns files are missing."
+    return 1
 }
 
 start_service() {
