@@ -100,12 +100,6 @@ if "GO_PKG_LDFLAGS:=" not in text:
     text = text.replace("GO_PKG_LDFLAGS_X:=", "GO_PKG_LDFLAGS:=-s -w\nGO_PKG_LDFLAGS_X:=", 1)
 elif "-s -w" not in text.split("GO_PKG_LDFLAGS_X:=", 1)[0]:
     text = text.replace("GO_PKG_LDFLAGS:=", "GO_PKG_LDFLAGS:=-s -w ", 1)
-# Full variant defaults Naive on and then links -lcronet, which these trees do not ship.
-naive = "  config SING_BOX_BUILD_NAIVE_OUTBOUND\n  def_bool y\n"
-naive_off = "  config SING_BOX_BUILD_NAIVE_OUTBOUND\n  bool \"Build with NaiveProxy outbound support\"\n  default n\n"
-if naive not in text:
-    raise SystemExit("sing-box naive default not found")
-text = text.replace(naive, naive_off, 1)
 old = """define Package/sing-box/install
 \t$(call GoPackage/Package/Install/Bin,$(1))
 

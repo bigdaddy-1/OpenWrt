@@ -99,8 +99,13 @@ CONFIG_PACKAGE_rpcd-mod-iwinfo=y
 CONFIG_PACKAGE_rpcd-mod-luci=y
 CONFIG_PACKAGE_rpcd-mod-rrdns=y
 CONFIG_PACKAGE_rpcd-mod-ucode=y
-# immortalwrt full build. Its tags are not the upstream SINGBOX_WITH_* symbols.
-CONFIG_PACKAGE_sing-box=y
+# immortalwrt tiny build: the tags this router actually uses.
+CONFIG_PACKAGE_sing-box-tiny=y
+CONFIG_SING_BOX_TINY_BUILD_CLASH_API=y
+CONFIG_SING_BOX_TINY_BUILD_GVISOR=y
+CONFIG_SING_BOX_TINY_BUILD_QUIC=y
+CONFIG_SING_BOX_TINY_BUILD_UTLS=y
+CONFIG_SING_BOX_TINY_BUILD_WIREGUARD=y
 CONFIG_PACKAGE_kmod-netlink-diag=y
 CONFIG_PACKAGE_ttyd=y
 CONFIG_PACKAGE_ucode-mod-html=y
