@@ -31,6 +31,8 @@ rm -f ./package/luci-theme-argon/htdocs/luci-static/argon/img/bg1.webp
 # The theme ships its own settings page. Nothing here needs it.
 rm -rf ./package/luci-theme-argon/root/usr/share/luci/menu.d/luci-app-argon-config.json \
 	./package/luci-theme-argon/htdocs/luci-static/resources/view/argon-config.js
+# luci.mk defaults luci-i18n-argon-config-* back on from these po files.
+rm -rf ./package/luci-theme-argon/po/zh_Hans ./package/luci-theme-argon/po/zh_Hant
 
 # attr 2.6.0 and acl 2.4.0 use struct xattr_args, which musl's linux/xattr.h does not have.
 mkdir -p ./feeds/packages/utils/attr/patches ./feeds/packages/utils/acl/patches
