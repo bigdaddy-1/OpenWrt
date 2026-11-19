@@ -48,6 +48,7 @@ cat > ./sing-box <<\EOF
 
 START=98
 USE_PROCD=1
+EXTRA_COMMANDS="run_instance"
 
 CONFIG_URL=SURL
 SELECTED_MODE="${SELECTED_MODE:-tun}"
@@ -284,11 +285,23 @@ NFT_EOF
         ip -6 route add local default dev lo table "$POLICY_ROUTE_TABLE" 2>/dev/null
         ip route add local default dev lo table "$POLICY_ROUTE_TABLE" 2>/dev/null
     elif [ "$SELECTED_MODE" == "tun" ]; then
-        ip tuntap add dev "$TUN_INTERFACE" mode tun user root 2>/dev/null
-        ip link set "$TUN_INTERFACE" up 2>/dev/null
-        ip route replace default dev "$TUN_INTERFACE" table "$POLICY_ROUTE_TABLE" 2>/dev/null
-        ip -6 route replace default dev "$TUN_INTERFACE" table "$POLICY_ROUTE_TABLE" 2>/dev/null
+        setup_tun
     fi
+}
+
+setup_tun() {
+    ip link set "$TUN_INTERFACE" down 2>/dev/null
+    ip tuntap del dev "$TUN_INTERFACE" mode tun 2>/dev/null
+    ip tuntap add dev "$TUN_INTERFACE" mode tun user root 2>/dev/null
+    ip link set "$TUN_INTERFACE" up 2>/dev/null
+    ip route replace default dev "$TUN_INTERFACE" table "$POLICY_ROUTE_TABLE" 2>/dev/null
+    ip -6 route replace default dev "$TUN_INTERFACE" table "$POLICY_ROUTE_TABLE" 2>/dev/null
+}
+
+run_instance() {
+    exec 1000>&-
+    [ "$SELECTED_MODE" == "tun" ] && setup_tun
+    exec capsh --caps="${capabilities}+eip" -- -c "capsh --user=nobody --addamb='${capabilities}' -- -c '$APPBINARY run -c $CONFIGFILE --disable-color'"
 }
 
 cleanup_tunnel_routing() {
@@ -321,7 +334,7 @@ start_service() {
     procd_open_instance
     procd_set_param respawn 3600 5 10
     procd_set_param netdev "$ZT_INTERFACE"
-    procd_set_param command capsh --caps="${capabilities}+eip" -- -c "capsh --user=nobody --addamb='${capabilities}' -- -c '$APPBINARY run -c $CONFIGFILE --disable-color'"
+    procd_set_param command /etc/init.d/sing-box run_instance
     procd_set_param stdout 1
     procd_set_param stderr 1
     procd_close_instance

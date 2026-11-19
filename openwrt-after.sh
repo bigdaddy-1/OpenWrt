@@ -198,13 +198,13 @@ plugins:
   - tag: 'cache.local'
     type: cache
     args:
-      size: 5120
+      size: 1024
       lazy_cache_ttl: 86400
 
   - tag: 'cache.remote'
     type: cache
     args:
-      size: 5120
+      size: 1024
       lazy_cache_ttl: 86400
 
   - tag: 'hosts'
@@ -245,11 +245,11 @@ plugins:
       concurrent: 2
       upstreams:
         - tag: cf
-          addr: "https://cloudflare-dns.com/dns-query"
-          dial_addr: "1.1.1.1"
+          addr: https://cloudflare-dns.com/dns-query
+          dial_addr: 1.1.1.1
         - tag: google
-          addr: "https://dns.google/dns-query"
-          dial_addr: "8.8.8.8"
+          addr: https://dns.google/dns-query
+          dial_addr: 8.8.8.8
 
   - tag: 'fallback'
     type: fallback
