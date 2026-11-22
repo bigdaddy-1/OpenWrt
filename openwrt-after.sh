@@ -271,10 +271,9 @@ plugins:
     type: sequence
     args:
       - exec: $cache.local
-      - matches: has_resp
-        exec: accept
-      - exec: $cndns
-      - exec: nftset inet,fw4,localnetwork,ipv4_addr,24 inet,fw4,localnetwork6,ipv6_addr,48
+      - matches: "!has_resp"
+        exec: $cndns
+      - exec: nftset inet,fw4,localnetwork,ipv4_addr,24 inet,fw4,localnetwork6,ipv6_addr,64
       - exec: accept
 
   - tag: 'remote'
